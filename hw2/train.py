@@ -23,7 +23,6 @@ def run(data_path):
 
         mlflow.sklearn.autolog()
 
-
         rf = RandomForestRegressor(max_depth=10, random_state=0)
         rf.fit(X_train, y_train)
         y_pred = rf.predict(X_valid)
