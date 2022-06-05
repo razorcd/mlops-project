@@ -20,3 +20,12 @@ https://github.com/DataTalksClub/mlops-zoomcamp
  - `prefect config view` -> `PREFECT_API_URL='http://127.0.0.1:4200/api' (from profile)`
  - open `<external-ip>:4200` in browser
 
+ - create storage `prefect storage create`
+ - get storage `prefect storage ls`
+ 
+ 
+ - create prefect deployment `prefect deployment create prefect_deploy.py`
+ - inspect deployment `prefect deployment inspect 'main/model_training'`
+ - you still have to specify where to run. (Prefect server only schedules, does not execute runs) Create Agents and work queues in UI.
+ - `prefect work-queue preview 3162c642-caca-45cc-bf1a-7a26599525c4`
+ - start server in running server / local machine: `prefect agent start 3162c642-caca-45cc-bf1a-7a26599525c4`
