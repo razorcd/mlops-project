@@ -1,4 +1,5 @@
 import pandas as pd
+import pickle
 
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.linear_model import LinearRegression
@@ -14,12 +15,7 @@ from dateutil.relativedelta import relativedelta
 
 
 @task
-def get_paths(d):
-    if (d==None): dateobj = today = date.today()
-    else: 
-        date_format = '%Y-%m-%d'
-        dateobj = datetime.strptime(d, date_format).date()
-    
+def get_paths(dateobj):
     train_date = dateobj - relativedelta(months=2)
     val_date = dateobj - relativedelta(months=1)
 
@@ -84,8 +80,13 @@ def run_model(df, categorical, dv, lr):
 
 
 @flow(task_runner=SequentialTaskRunner()) #all tasks will run in order
-def main(date="2021-08-15"):
-    train_path, val_path = get_paths(date).result()
+def main(d="2021-08-15"):  #run_model-6559300c-0' - The MSE of validation is: 11.63703272181817
+    if (d==None): dateobj = today = date.today()
+    else: 
+        date_format = '%Y-%m-%d'
+        dateobj = datetime.strptime(d, date_format).date()
+    
+    train_path, val_path = get_paths(dateobj).result()
 
     categorical = ['PUlocationID', 'DOlocationID']
 
@@ -97,6 +98,31 @@ def main(date="2021-08-15"):
 
     # train the model
     lr, dv = train_model(df_train_processed, categorical).result()
+    files_date = dateobj.strftime('%Y-%m-%d')
+    with open(f"models/model-{files_date}.bin", "wb") as f_out:
+            pickle.dump(lr, f_out)
+    with open(f"models/dv-{files_date}.b", "wb") as f_out:
+            pickle.dump(dv, f_out) # 16K Jun  6 18:23 dv-2021-08-15.b
+        
     run_model(df_val_processed, categorical, dv, lr)
 
-main()
+# main()
+
+#deploy scheduled runs:
+from prefect.deployments import DeploymentSpec
+from prefect.orion.schemas.schedules import CronSchedule
+from prefect.flow_runners import SubprocessFlowRunner
+
+
+DeploymentSpec(
+    flow=main,
+    name="model_training",
+    schedule=CronSchedule(
+        cron="0 9 15 * *",
+        timezone="UTC"
+    ),
+    flow_runner=SubprocessFlowRunner(),
+    tags=["ml"]
+)  # 3 upcoming schedules
+
+# prefect work-queue ls
