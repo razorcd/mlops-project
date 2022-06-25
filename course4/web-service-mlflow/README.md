@@ -25,3 +25,8 @@ mlflow artifacts download \
     --artifact-path model \
     --dst-path .
 ```
+
+Convert `ipynb` to `python script`: 
+```
+jupyter nbconvert --to 'script' score.ipynb
+```
