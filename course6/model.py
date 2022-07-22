@@ -23,6 +23,7 @@ def load_model(run_id):
     return dv, model
 
 def base64_decode(encoded_data):
+    print(f'decoding data: {encoded_data}')
     decoded_data = base64.b64decode(encoded_data).decode('utf-8')
     ride_event = json.loads(decoded_data)
     return ride_event
@@ -75,6 +76,7 @@ class ModelService():
             }
 
             for callback in self.callbacks:
+                print(f'Sending to callback: {callback}, prediction_event: {prediction_event}')
                 callback(prediction_event)
             
             predictions_events.append(prediction_event)
@@ -105,15 +107,19 @@ def create_kinesis_client():
 
     return boto3.client("kinesis", endpoint_url=endpoint_url)    
 
-def init(prediction_stream_name:str, run_id:str, test_run:bool):
+def init(prediction_stream_name:str, run_id:str, test_run:bool=False):
+    print(f'test_run={test_run}')
     dv, model = load_model(run_id)
     version = os.getenv("RUN_ID")
-    model_service = ModelService(dv, model, model_version=version)
+    
 
     callbacks = []
     if not test_run:
+        print("Preparing Kinesis and sending record !!!")
         kinesis_client = create_kinesis_client()
         kinesis_callback = KinesisCallback(kinesis_client, prediction_stream_name)
         callbacks.append(kinesis_callback.put_record)
+
+    model_service = ModelService(dv, model, model_version=version,callbacks=callbacks)
 
     return model_service

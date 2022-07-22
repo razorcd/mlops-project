@@ -15,8 +15,9 @@ export PREDICTIONS_STREAM_NAME="ride_predictions"
 
 docker-compose up -d
 
-sleep 1
+sleep 8
 
+echo "Creating Kinesis stream ${PREDICTIONS_STREAM_NAME}"
 aws --endpoint-url=http://localhost:4566 \
     kinesis create-stream \
     --stream-name ${PREDICTIONS_STREAM_NAME} \
@@ -28,23 +29,23 @@ python test_docker.py
 ERROR_CODE=$?
 
 if [ ${ERROR_CODE} != 0 ]; then
-    # docker-compose logs
+    docker-compose logs
     docker-compose down
     docker-compose rm -y
     exit ${ERROR_CODE}
 fi
 
 
-# # pipenv run python test_kinesis.py
+python test_kinesis.py
 
-# ERROR_CODE=$?
+ERROR_CODE=$?
 
-# if [ ${ERROR_CODE} != 0 ]; then
-#     docker-compose logs
-#     docker-compose down
-#     exit ${ERROR_CODE}
-# fi
+if [ ${ERROR_CODE} != 0 ]; then
+    docker-compose logs
+    docker-compose down
+    exit ${ERROR_CODE}
+fi
 
 
-# docker-compose down
+docker-compose down
 # docker-compose rm -y

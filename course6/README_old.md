@@ -92,9 +92,9 @@ SHARD='shardId-000000000000'
 
 SHARD_ITERATOR=$(aws kinesis \
     get-shard-iterator \
-        --shard-id ${SHARD} \
+        --shard-id shardId-000000000000 \
         --shard-iterator-type TRIM_HORIZON \
-        --stream-name ${KINESIS_STREAM_OUTPUT} \
+        --stream-name ride_predictions \
         --query 'ShardIterator' \
 )
 

@@ -17,6 +17,8 @@ shard_iterator_response = kinesis_client.get_shard_iterator(
     ShardIteratorType='TRIM_HORIZON'
 )
 
+pprint(shard_iterator_response)
+
 shard_iterator_id = shard_iterator_response['ShardIterator']
 
 
@@ -37,13 +39,13 @@ expected_record = {
     'model': 'ride_duration_prediction_model',
     'version': 'Test123',
     'prediction': {
-        'ride_duration': 21.3,
+        'ride_duration': 12.8,
         'ride_id': 256
     }
 }
 
 
-diff = DeepDiff(actual_record, expected_record, significant_digits=2)
+diff = DeepDiff(actual_record, expected_record, significant_digits=1)
 pprint(f'diff={diff}')
 
 assert 'values_changed' not in diff

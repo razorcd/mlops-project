@@ -6,25 +6,33 @@ services:
     ports: 
       - 8080:8080
     environment:
+      - KINESIS_INITIALIZE_STREAMS=${PREDICTIONS_STREAM_NAME}
       - PREDICTIONS_STREAM_NAME=ride_predictions
       - TEST_RUN=True
       - RUN_ID=Test123
       - AWS_DEFAULT=eu-west-1
+      - AWS_DEFAULT_REGION=eu-west-1
       - MODEL_LOCATION=/app
       - KINESIS_ENDPOINT_URL=http://kinesis:4566/
+      - AWS_ACCESS_KEY_ID=ID1
+      - AWS_SECRET_ACCESS_KEY=KEY1
     volumes:
       - "./:/app"
   localstack:
     container_name: "localstack_main"
     image: localstack/localstack
+    hostname: kinesis
     ports:
       - "127.0.0.1:4566:4566"            # LocalStack Gateway
-      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
-      - "127.0.0.1:53:53"                # DNS config (only required for Pro)
-      - "127.0.0.1:53:53/udp"            # DNS config (only required for Pro)
-      - "127.0.0.1:443:443"              # LocalStack HTTPS Gateway (only required for Pro)
+      # - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+      # - "127.0.0.1:53:53"                # DNS config (only required for Pro)
+      # - "127.0.0.1:53:53/udp"            # DNS config (only required for Pro)
+      # - "127.0.0.1:443:443"              # LocalStack HTTPS Gateway (only required for Pro)
     environment:
       - SERVICES=kinesis
+      - AWS_DEFAULT_REGION=eu-west-1
+      # - AWS_ACCESS_KEY_ID=ID1
+      # - AWS_SECRET_ACCESS_KEY=KEY1
       # - DEBUG=${DEBUG-}
       # - PERSISTENCE=${PERSISTENCE-}
       # - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR-}
@@ -33,3 +41,6 @@ services:
     # volumes:
     #   - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
     #   - "/var/run/docker.sock:/var/run/docker.sock"
+networks:
+  course6:
+    driver: bridge
