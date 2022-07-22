@@ -49,3 +49,5 @@ fi
 
 docker-compose down
 # docker-compose rm -y
+
+exit ${ERROR_CODE}
