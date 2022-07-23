@@ -58,6 +58,10 @@ Create pre-commit hooks:
 pre-commit install
 ```
 
+will require to run commits using pipenv
+```
+pipenv run git commit -m "...."
+```
 
 
 # Final:
