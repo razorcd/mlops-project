@@ -8,8 +8,11 @@ scikit-learn = "==1.0.2"
 pandas = "*"
 pyarrow = "*"
 s3fs = "*"
+pytest = "*"
+deepdiff = "*"
+
 
 [dev-packages]
 
 [requires]
-python_version = "3.9"
+python_version = "3.8"
