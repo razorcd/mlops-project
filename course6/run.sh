@@ -2,7 +2,7 @@
 
 cd "$(dirname "$0")"
 
-if [ "${LOCAL_IMAGE_NAME}" == "" ]; then 
+if [ "${LOCAL_IMAGE_NAME}" == "" ]; then
     LOCAL_TAG=`date +"%Y-%m-%d-%H-%M"`
     export LOCAL_IMAGE_NAME="stream-model-duration:${LOCAL_TAG}"
     echo "LOCAL_IMAGE_NAME is not set, building a new image with tag ${LOCAL_IMAGE_NAME}"
@@ -23,8 +23,8 @@ aws --endpoint-url=http://localhost:4566 \
     --stream-name ${PREDICTIONS_STREAM_NAME} \
     --shard-count 1
 
-python test_docker.py
-# pipenv run python test_docker.py
+# python test_docker.py
+pipenv run python test_docker.py
 
 ERROR_CODE=$?
 
@@ -36,7 +36,8 @@ if [ ${ERROR_CODE} != 0 ]; then
 fi
 
 
-python test_kinesis.py
+# python test_kinesis.py
+pipenv run python test_kinesis.py
 
 ERROR_CODE=$?
 

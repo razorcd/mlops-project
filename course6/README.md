@@ -52,3 +52,29 @@ Run linter:
 ```
 pylint --recursive=y .
 ```
+
+Create pre-commit hooks:
+```
+pre-commit install
+```
+
+
+
+# Final:
+
+- setup project:
+```
+conda activate course5
+pip install pipenv
+make setup
+```
+
+- run integration test:
+```
+make integration_test
+```
+
+- publish:
+```
+make publish
+```
