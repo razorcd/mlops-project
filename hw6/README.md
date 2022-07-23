@@ -7,3 +7,12 @@ List files in s3 bucket:
 ```
 aws s3 ls --endpoint-url=http://localhost:4566 s3://nyc-duration/ID1 --recursive --human-readable --summarize
 ```
+
+
+Run tests:
+```
+docker-compose up -d
+pipenv install
+pipenv shell
+python integration_test.py
+```
