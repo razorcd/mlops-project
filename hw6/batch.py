@@ -19,9 +19,8 @@ def get_output_path(year, month):
     return output_pattern.format(year=year, month=month)
 
 
-def main(input_file, output_file):
-    print(f'Input file: {input_file}')
-
+def main(input_file, output_file, year, month):
+    print('Read model')
     with open('model.bin', 'rb') as f_in:
         dv, lr = pickle.load(f_in)
 
@@ -52,11 +51,26 @@ def main(input_file, output_file):
         'client_kwargs': {'endpoint_url': 'http://localhost:4566'}
     }
     df_result.to_parquet(output_file, engine='pyarrow', index=False, storage_options=storage_options)
+    print("Done")
 
 
 def read_data(filename):
-    df = pd.read_parquet(filename)
-    return df
+    print(f'Reading file {filename}')
+
+    if (filename.startswith('s3')):
+        storage_options = {
+            'client_kwargs': {'endpoint_url': 'http://localhost:4566'}
+        }
+        df = pd.read_parquet(
+            filename,
+            engine='pyarrow',
+            storage_options=storage_options
+        )
+        return df
+    else:
+        df = pd.read_parquet(filename)
+        print('loaded')
+        return df
 
 
 def prepare_data(df, categorical):
@@ -76,5 +90,5 @@ if __name__ == "__main__":
     input_file = get_input_path(year, month)
     output_file = get_output_path(year, month)
 
-    main(input_file, output_file)
+    main(input_file, output_file, year, month)
 
