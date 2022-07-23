@@ -1,5 +1,5 @@
-import requests 
 import json
+import requests
 from deepdiff import DeepDiff
 
 event = {
@@ -30,8 +30,8 @@ print('Actual response:')
 print(json.dumps(actual_response, indent=2))
 
 expected_response = {'predictions': [{
-    'model': 'ride_duration_prediction_model', 
-    'version': 'Test123', 
+    'model': 'ride_duration_prediction_model',
+    'version': 'Test123',
     'prediction': {'ride_duration': 12.8, 'ride_id': 256}}
 ]}
 

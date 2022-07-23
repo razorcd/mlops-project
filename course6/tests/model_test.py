@@ -9,7 +9,7 @@ def test_base64_decode():
             "PULocationID": 130,
             "DOLocationID": 205,
             "trip_distance": 3.66
-        }, 
+        },
         "ride_id": 256
     }
 
@@ -58,7 +58,7 @@ def test_predict():
 
     actual_prediction = model_service.predict(features)
 
-    
+
     assert actual_prediction == 10.0
 
 
@@ -80,7 +80,7 @@ def test_lambda_handler():
 
 
     actual_prediction = model_service.lambda_handler(event)
-    
+
     assert actual_prediction == {
         'predictions': [{
                 'model': 'ride_duration_prediction_model',

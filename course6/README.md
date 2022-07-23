@@ -10,7 +10,7 @@ docker build -t stream-model-duration:v2 .
 ```
 
 ```
-docker run -it --rm \                     
+docker run -it --rm \
     -p 8080:8080 \
     -e PREDICTIONS_STREAM_NAME="ride_predictions" \
     -e RUN_ID="e1efc53e9bd149078b0c12aeaa6365df" \
@@ -28,7 +28,7 @@ python test_docker.py
 ```
 pipenv run pytest tests/
 
-//or 
+//or
 
 pipenv shell
 pytest tests/
@@ -45,4 +45,10 @@ aws kinesis get-shard-iterator \
         --stream-name ride_predictions \
         --query 'ShardIterator' \
       --endpoint-url=http://localhost:4566
+```
+
+
+Run linter:
+```
+pylint --recursive=y .
 ```

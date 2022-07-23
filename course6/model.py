@@ -1,22 +1,19 @@
 import os
 import json
-from subprocess import call
-import boto3
 import base64
 import pickle
 
-import mlflow
+import boto3
 
-
-
-
+# import mlflow
 
 def load_model(run_id):
+    print(f'Loading model with run_id={run_id}')
     # logged_model = f's3://mlflow-models-alexey/1/{run_id}/artifacts/model'
-    logged_model = f'lin_reg.bin'
+    logged_model = 'lin_reg.bin'
     # logged_model = f'runs:/{run_id}/model'
     # model = mlflow.pyfunc.load_model(logged_model)
-    
+
     with open(logged_model, 'rb') as f_in:
         (dv, model) = pickle.load(f_in)
 
@@ -39,7 +36,7 @@ class ModelService():
 
     def prepare_features(self, ride):
         features = {}
-        features['PU_DO'] = '%s_%s' % (ride['PULocationID'], ride['DOLocationID'])
+        features['PU_DO'] = f"{ride['PULocationID']}_{ride['DOLocationID']}"
         features['trip_distance'] = ride['trip_distance']
         return features
 
@@ -52,9 +49,9 @@ class ModelService():
 
     def lambda_handler(self,event):
         # print(json.dumps(event))
-        
+
         predictions_events = []
-        
+
         for record in event['Records']:
             encoded_data = record['kinesis']['data']
             ride_event = base64_decode(encoded_data)
@@ -62,23 +59,23 @@ class ModelService():
             # print(ride_event)
             ride = ride_event['ride']
             ride_id = ride_event['ride_id']
-        
+
             features = self.prepare_features(ride)
             prediction = self.predict(features)
-        
+
             prediction_event = {
                 'model': 'ride_duration_prediction_model',
                 'version': self.model_version,
                 'prediction': {
                     'ride_duration': prediction,
-                    'ride_id': ride_id   
+                    'ride_id': ride_id
                 }
             }
 
             for callback in self.callbacks:
                 print(f'Sending to callback: {callback}, prediction_event: {prediction_event}')
                 callback(prediction_event)
-            
+
             predictions_events.append(prediction_event)
 
 
@@ -91,7 +88,7 @@ class KinesisCallback():
         self.kinesis_client = kinesis_client
         self.prediction_stream_name = prediction_stream_name
 
-    def put_record(self, prediction_event): 
+    def put_record(self, prediction_event):
         ride_id = prediction_event['prediction']['ride_id']
         self.kinesis_client.put_record(
             StreamName = self.prediction_stream_name,
@@ -105,13 +102,13 @@ def create_kinesis_client():
     if endpoint_url is None:
         return boto3.client("kinesis")
 
-    return boto3.client("kinesis", endpoint_url=endpoint_url)    
+    return boto3.client("kinesis", endpoint_url=endpoint_url)
 
 def init(prediction_stream_name:str, run_id:str, test_run:bool=False):
     print(f'test_run={test_run}')
     dv, model = load_model(run_id)
     version = os.getenv("RUN_ID")
-    
+
 
     callbacks = []
     if not test_run:
