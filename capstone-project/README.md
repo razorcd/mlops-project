@@ -1,4 +1,5 @@
 # Capstone Project for ML Ops course
+Build an end-to-end machine learning pipeline project
 
 ## Input data
 
@@ -25,28 +26,28 @@ Source: https://www.kaggle.com/datasets/anwarsan/credit-card-bank-churn
 
 ## Data cleanup
 
-Removes rows with "Unknown" records, removes irellevant columns, lowercase column names, lowercase categoriacal values.
+- Removes rows with "Unknown" records, removes irellevant columns, lowercase column names, lowercase categoriacal values.
 
-Categories that can be ordered hiarachically are converted into ints, like "income" or "education level".
+- Categories that can be ordered hiarachically are converted into ints, like "income" or "education level".
 
 [prepareData.ipynb](prepareData.ipynb)
 
 ## Exploratory data analysis
 
-Checks correlations on numerical columns. 
+- Checks correlations on numerical columns. 
 
-Checks count on categorical columns.
+- Checks count on categorical columns.
 
 [exploratory_data_analysis.ipynb](exploratory_data_analysis.ipynb)
 
 ## Train Model
 
-Prepare a model using XGBoost. 
+- Prepare a model using XGBoost. 
 
-Input data is split into 66%, 33%, 33% for training, validation and test data.
+- Input data is split into 66%, 33%, 33% for training, validation and test data.
 
-Measures MAE, MSE, RMSE.
+- Measures MAE, MSE, RMSE.
 
-Measures % of deviated predictions based on month threshold.
+- Measures % of deviated predictions based on month threshold.
 
 [model_train.ipynb](model_train.ipynb)
