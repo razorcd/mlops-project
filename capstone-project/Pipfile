@@ -7,6 +7,10 @@ name = "pypi"
 
 [dev-packages]
 import-ipynb = "*"
+seaborn = "*"
+matplotlib = "*"
+pandas = "*"
+numpy = "*"
 
 [requires]
 python_version = "3.8"
