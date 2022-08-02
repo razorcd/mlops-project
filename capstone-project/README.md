@@ -37,7 +37,7 @@ Checks correlations on numerical columns.
 
 Checks count on categorical columns.
 
-model_train.ipynb
+[model_train.ipynb](model_train.ipynb)
 
 ## Train Model
 
