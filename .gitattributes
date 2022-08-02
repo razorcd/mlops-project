@@ -1,0 +1,3 @@
+# *.* linguist-language=Python
+*.python linguist-detectable=true
+*.ipynb linguist-detectable=false
