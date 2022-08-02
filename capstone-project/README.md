@@ -12,9 +12,9 @@ Source: https://www.kaggle.com/datasets/anwarsan/credit-card-bank-churn
 
 ## Implementation steps:
 
-- [ ] cleanup data
-- [ ] exploratory data analysis
-- [ ] train model
+- [x] cleanup data
+- [x] exploratory data analysis
+- [x] train model
 - [ ] ml pipeline for hiperparameter tuning
 - [ ] model registry
 - [ ] ML-serve server
@@ -25,4 +25,20 @@ Source: https://www.kaggle.com/datasets/anwarsan/credit-card-bank-churn
 
 ## Data cleanup
 
+Removes rows with "Unknown" records, removes irellevant columns, lowercase column names, lowercase categoriacal values.
+
+Categories that can be ordered hiarachically are converted into ints, like "income" or "education level".
+
 prepareData.ipynb
+
+## Exploratory data analysis
+
+Checks correlations on numerical columns. 
+
+Checks count on categorical columns.
+
+model_train.ipynb
+
+## Train Model
+
+model_train.ipynb
