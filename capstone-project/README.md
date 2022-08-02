@@ -29,7 +29,7 @@ Removes rows with "Unknown" records, removes irellevant columns, lowercase colum
 
 Categories that can be ordered hiarachically are converted into ints, like "income" or "education level".
 
-prepareData.ipynb
+[prepareData.ipynb](prepareData.ipynb)
 
 ## Exploratory data analysis
 
@@ -37,7 +37,7 @@ Checks correlations on numerical columns.
 
 Checks count on categorical columns.
 
-[model_train.ipynb](model_train.ipynb)
+[exploratory_data_analysis.ipynb](exploratory_data_analysis.ipynb)
 
 ## Train Model
 
@@ -49,4 +49,4 @@ Measures MAE, MSE, RMSE.
 
 Measures % of deviated predictions based on month threshold.
 
-model_train.ipynb
+[model_train.ipynb](model_train.ipynb)
