@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 
 [dev-packages]
+import-ipynb = "*"
 
 [requires]
 python_version = "3.8"
