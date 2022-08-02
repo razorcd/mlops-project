@@ -41,4 +41,12 @@ model_train.ipynb
 
 ## Train Model
 
+Prepare a model using XGBoost. 
+
+Input data is split into 66%, 33%, 33% for training, validation and test data.
+
+Measures MAE, MSE, RMSE.
+
+Measures % of deviated predictions based on month threshold.
+
 model_train.ipynb
