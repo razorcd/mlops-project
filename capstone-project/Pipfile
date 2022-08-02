@@ -11,6 +11,8 @@ seaborn = "*"
 matplotlib = "*"
 pandas = "*"
 numpy = "*"
+xgboost = "*"
+sklearn = "*"
 
 [requires]
 python_version = "3.8"
