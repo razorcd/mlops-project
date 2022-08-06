@@ -64,11 +64,15 @@ def train(dataFrame, y, xgb_params):
     dicts = dataFrame.to_dict(orient="records")
     dv = DictVectorizer(sparse=False)
     X = dv.fit_transform(dicts)
+
     features = dv.get_feature_names_out()
-    dtrain = xgb.DMatrix(X, label=y, feature_names=features)
+    # print(features)
+    dtrain = xgb.DMatrix(X, label=y, feature_names=features, enable_categorical=True)
 
     # train
     model = xgb.train(xgb_params, dtrain, num_boost_round=10)
+    # print(model.feature_names)
+
     return dv, model
 
 
@@ -81,14 +85,14 @@ def predict(dataFrame, dv, model):
     return y_pred, X
 
 def get_rmse(y_val, y_pred_val):
-    # mae = metrics.mean_absolute_error(y_val, y_pred_val)
-    # mse = metrics.mean_squared_error(y_val, y_pred_val)
+    mae = metrics.mean_absolute_error(y_val, y_pred_val)
+    mse = metrics.mean_squared_error(y_val, y_pred_val)
     rmse = np.sqrt(metrics.mean_squared_error(y_val, y_pred_val))
 
     # print("MAE for numerical linear:", mae)
     # print("MSE for numerical linear:", mse)
     # print("RMSE:", rmse)
-    return rmse
+    return mae, mse, rmse
 
 def set_mlflow(experiment):
     mlflow.set_tracking_uri("sq`lite:///mlflow.db")
@@ -105,18 +109,9 @@ def run(experiement, data_input):
 
     mlflow.xgboost.autolog()
 
-    # xgb_params_search_space = {
-    #     'max_depth': scope.int(hp.choice('max_depth', [5, 10, 12, 13, 14, 20,30,40,50,100])),
-    #     'eta': scope.int(hp.choice('eta', [0, 0.001, 0.01, 0.1, 0.2, 0.3, 0.4, 0.6, 1, 2, 5, 10])),
-    #     'min_child_weight': 1,
-    #     'objective': 'reg:squarederror',
-    #     'nthread': 8,
-    #     'verbosity':0,
-    #     "seed":42
-    # }
     xgb_params_search_space = {
-        'max_depth': scope.int(hp.choice('max_depth', [5, 10])),
-        'eta': scope.int(hp.choice('eta', [0.001])),
+        'max_depth': scope.int(hp.choice('max_depth', [5, 10, 12, 13, 14, 20,30,40,50,100])),
+        'eta': scope.int(hp.choice('eta', [0, 0.001, 0.01, 0.1, 0.2, 0.3, 0.4, 0.6, 1, 2, 5, 10])),
         'min_child_weight': 1,
         'objective': 'reg:squarederror',
         'nthread': 8,
@@ -139,12 +134,12 @@ def run(experiement, data_input):
                 pickle.dump(dv, f_out)
             mlflow.log_artifact(f'{preprocesor_path}/preprocesor.b', artifact_path="preprocesor") #log dv as artifact
             os.remove(f'{preprocesor_path}/preprocesor.b')
-            print(preprocesor_path)
             os.removedirs(preprocesor_path)
-            print(os.listdir('.'))
 
             y_pred_val, X_val = predict(df_val, dv, model)
-            rmse = get_rmse(y_val, y_pred_val)
+            mae, mse, rmse = get_rmse(y_val, y_pred_val)
+            mlflow.log_metric("mae", mae) 
+            mlflow.log_metric("mse", mse) 
             mlflow.log_metric("rmse", rmse) 
 
         return {'loss':rmse, 'status':STATUS_OK}
@@ -162,17 +157,6 @@ def register_best_run(experiment_name):
 
     client = MlflowClient()
 
-    # retrieve the top_n model runs and log the models to MLflow
-    # experiment = client.get_experiment_by_name(HPO_EXPERIMENT_NAME)
-    # runs = client.search_runs(
-    #     experiment_ids=experiment.experiment_id,
-    #     run_view_type=ViewType.ACTIVE_ONLY,
-    #     max_results=log_top,
-    #     order_by=["metrics.rmse ASC"]
-    # )
-    # for run in runs:
-    #     train_and_log_model(data_path=data_path, params=run.data.params)
-
     # select the model with the lowest test RMSE
     experiment = client.get_experiment_by_name(experiment_name)
     print(experiment)
@@ -183,9 +167,9 @@ def register_best_run(experiment_name):
         order_by=["metrics.rmse ASC"]
     )
     
-    print(f'models count: {len(best_runs)}')
+    print(f'Models count: {len(best_runs)}')
     if (len(best_runs)==0): raise "No models found."
-    print(f'top models found: {best_runs[0]}')
+    print(f'Top model found: {best_runs[0]}')
 
     # register the best model
     model_uri = f"runs:/{best_runs[0].info.run_id}/model"
@@ -217,10 +201,6 @@ if __name__ == '__main__':
     # start servers:
     # mlflow server --backend-store-uri sqlite:///mlflow1.db --port 5051 --default-artifact-root file:///home/cristiandugacicu/projects/personal/mlops-zoomcamp/hw2/artifacts
     # mlflow ui --backend-store-uri sqlite:///mlflow.db -p 5052
-
-    # mlflow.set_tracking_uri("sqlite:///mlflow.db")
-    # mlflow.set_tracking_uri("http://localhost:5051")
-    # mlflow.set_experiment("my-hw2")
 
     set_mlflow(args.experiment)
     run(args.experiment, args.data_input)

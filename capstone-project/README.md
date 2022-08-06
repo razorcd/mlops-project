@@ -16,8 +16,8 @@ Source: https://www.kaggle.com/datasets/anwarsan/credit-card-bank-churn
 - [x] cleanup data
 - [x] exploratory data analysis
 - [x] train model
-- [ ] ml pipeline for hiperparameter tuning
-- [ ] model registry
+- [x] ml pipeline for hiperparameter tuning
+- [x] model registry
 - [ ] ML-serve server
 - [ ] tests
 - [ ] linters
