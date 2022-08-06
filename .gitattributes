@@ -1,0 +1,4 @@
+# *.* linguist-language=Python
+*.py linguist-detectable=true
+*.ipynb linguist-detectable=false
+*.html linguist-detectable=false
