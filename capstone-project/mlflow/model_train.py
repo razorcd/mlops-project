@@ -64,7 +64,7 @@ def train(dataFrame, y, xgb_params):
     dicts = dataFrame.to_dict(orient="records")
     dv = DictVectorizer(sparse=False)
     X = dv.fit_transform(dicts)
-    features = dv.get_feature_names()
+    features = dv.get_feature_names_out()
     dtrain = xgb.DMatrix(X, label=y, feature_names=features)
 
     # train
@@ -87,7 +87,7 @@ def get_rmse(y_val, y_pred_val):
 
     # print("MAE for numerical linear:", mae)
     # print("MSE for numerical linear:", mse)
-    print("RMSE:", rmse)
+    # print("RMSE:", rmse)
     return rmse
 
 def set_mlflow(experiment):
@@ -128,7 +128,7 @@ def run(experiement, data_input):
         with mlflow.start_run():
             active_mlflow_run_id = mlflow.active_run().info.run_id
             if (active_mlflow_run_id==None): raise ValueError("missing MLFlow active run.")
-            print(f'Training model. Active MLFlow run_id: {active_mlflow_run_id}')
+            # print(f'Training model. Active MLFlow run_id: {active_mlflow_run_id}')
             mlflow.set_tag("model", "xgboost")
 
             dv, model = train(df_full_train, y_full_train, params)
