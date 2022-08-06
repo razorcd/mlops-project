@@ -1,0 +1,13 @@
+FROM python:3.8-slim-buster
+
+RUN pip install mlflow boto3 pymysql
+run echo
+
+RUN mkdir /tmp/mlops
+WORKDIR /tmp/mlops
+RUN mkdir /tmp/mlopsdb
+RUN mkdir /tmp/mlopsartifacts
+
+EXPOSE 5050
+
+CMD mlflow server --backend-store-uri sqlite:////tmp/mlopsdb/mlflow.db --port 5050 --default-artifact-root file:///tmp/mlopsartifacts --host 0.0.0.0

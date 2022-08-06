@@ -79,7 +79,7 @@ def train(dataFrame, y, xgb_params):
 def predict(dataFrame, dv, model):
     dicts = dataFrame.to_dict(orient="records")
     X = dv.transform(dicts)
-    features = dv.get_feature_names()
+    features = dv.get_feature_names_out()
     dval = xgb.DMatrix(X, feature_names=features)
     y_pred = model.predict(dval)
     return y_pred, X
@@ -95,7 +95,7 @@ def get_rmse(y_val, y_pred_val):
     return mae, mse, rmse
 
 def set_mlflow(experiment):
-    mlflow.set_tracking_uri("sq`lite:///mlflow.db")
+    # mlflow.set_tracking_uri("sqlite:///db/mlflow.db")
     mlflow.set_tracking_uri("http://localhost:5051")
     mlflow.set_experiment(experiment)
 
@@ -128,7 +128,7 @@ def run(experiement, data_input):
 
             dv, model = train(df_full_train, y_full_train, params)
 
-            preprocesor_path = f'tmp/{active_mlflow_run_id}'
+            preprocesor_path = f'./tmp/{active_mlflow_run_id}'
             os.mkdir(preprocesor_path)
             with open(f'{preprocesor_path}/preprocesor.b', "wb") as f_out:
                 pickle.dump(dv, f_out)
