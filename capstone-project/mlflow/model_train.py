@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+from ast import arg
 import os
 import argparse
 import pandas as pd
@@ -86,12 +87,12 @@ def get_rmse(y_val, y_pred_val):
     print("RMSE:", rmse)
     return rmse
 
-def set_mlflow():
+def set_mlflow(experiment):
     mlflow.set_tracking_uri("sq`lite:///mlflow.db")
     mlflow.set_tracking_uri("http://localhost:5051")
-    mlflow.set_experiment("capstone")
+    mlflow.set_experiment(experiment)
 
-def run(data_input, model_output):
+def run(experiement, data_input):
     df_clean = pd.read_csv(data_input)
 
     y_column = "active_customer"
@@ -100,7 +101,7 @@ def run(data_input, model_output):
     df_full_train, df_train, df_val, df_test, y_full_train, y_train, y_val, y_test = split_dataFrame(df_clean[train_columns+[y_column]], y_column)
 
 
-    set_mlflow()
+    set_mlflow(experiement)
 
     def objective(params):
         with mlflow.start_run():
@@ -152,7 +153,7 @@ def run(data_input, model_output):
     # df_pred_val_result['y_pred_bool'] = df_pred_val_result['y_pred']>0.5
     # df_pred_val_result['y_val'] = y_val
     # print(df_pred_val_result.head())
-# # df_pred_val_result[df_pred_val_result.y_pred_bool!=df_pred_val_result.y_val]
+    # # df_pred_val_result[df_pred_val_result.y_pred_bool!=df_pred_val_result.y_val]
 
 
 
@@ -165,9 +166,9 @@ if __name__ == '__main__':
         help="the location where the input training data."
     )
     parser.add_argument(
-        "--model_output",
-        default="./model",
-        help="the location where the output model."
+        "--experiment",
+        default="capstone",
+        help="the MLFlow experiement."
     )
     args = parser.parse_args()
 
@@ -179,4 +180,4 @@ if __name__ == '__main__':
     # mlflow.set_tracking_uri("http://localhost:5051")
     # mlflow.set_experiment("my-hw2")
 
-    run(args.data_input, args.model_output)
+    run(args.experiment, args.data_input)

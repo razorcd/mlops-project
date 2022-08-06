@@ -6,5 +6,5 @@ mlflow ui --backend-store-uri sqlite:///mlflow.db -p 5052
 
 ### Build model:
 ```
-python model_train.py --data_input ../input_clean/credit_card_churn_clean.csv --model_output model/
+python model_train.py --data_input ../input_clean/credit_card_churn_clean.csv --experiment exp1     
 ```
