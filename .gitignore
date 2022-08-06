@@ -9,7 +9,7 @@ __pycache__/
 *.so
 
 .vscode
-
+capstone-project/mlflow/artifacts/
 
 # Distribution / packaging
 .Python
