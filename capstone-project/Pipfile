@@ -17,6 +17,7 @@ sklearn = "*"
 mlops = "*"
 mlflow = "*"
 argparse = "*"
+hyperopt = "*"
 
 [requires]
 python_version = "3.8"

@@ -12,6 +12,9 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn import metrics
 import mlflow
 import pickle
+from hyperopt import hp, space_eval
+from hyperopt.pyll import scope
+from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 
 
 def split_dataFrame(df_to_split, y_column):
@@ -52,7 +55,7 @@ def split_dataFrame(df_to_split, y_column):
     return df_full_train, df_train, df_val, df_test, y_full_train, y_train, y_val, y_test
 
 
-def train(dataFrame, y, max_depth, eta):
+def train(dataFrame, y, xgb_params):
     # Hot Encoding
     dicts = dataFrame.to_dict(orient="records")
     dv = DictVectorizer(sparse=False)
@@ -61,15 +64,6 @@ def train(dataFrame, y, max_depth, eta):
     dtrain = xgb.DMatrix(X, label=y, feature_names=features)
 
     # train
-    xgb_params = {
-        'eta': eta,
-        'max_depth': max_depth,
-        'min_child_weight': 1,
-        'objective': 'reg:squarederror',
-        'nthread': 8,
-        'seed':1,
-        'verbosity':0
-    }
     model = xgb.train(xgb_params, dtrain, num_boost_round=10)
     return dv, model
 
@@ -108,30 +102,48 @@ def run(data_input, model_output):
 
     set_mlflow()
 
-    with mlflow.start_run():
+    def objective(params):
+        with mlflow.start_run():
+            active_mlflow_run_id = mlflow.active_run().info.run_id
+            print(f'Training model. Active MLFlow run_id: {active_mlflow_run_id}')
+            mlflow.set_tag("model", "xgboost")
 
-        mlflow.sklearn.autolog()
-        mlflow.xgboost.autolog()
-        mlflow.set_tag("model", "xgboost")
-        dv, model = train(df_full_train, y_full_train, 6, 0.3)
+            dv, model = train(df_full_train, y_full_train, params)
 
-        y_pred_val, X_val = predict(df_val, dv, model)
+            preprocesor_path = f'tmp/{active_mlflow_run_id}'
+            os.mkdir(preprocesor_path)
+            with open(f'{preprocesor_path}/preprocesor.b', "wb") as f_out:
+                pickle.dump(dv, f_out)
+            mlflow.log_artifact(f'{preprocesor_path}/preprocesor.b', artifact_path="preprocesor") #log dv as artifact
+            os.remove(f'{preprocesor_path}/preprocesor.b')
+            os.removedirs(preprocesor_path)
 
-        rmse = get_rmse(y_val, y_pred_val)
-        mlflow.log_metric("rmse", rmse) 
+            y_pred_val, X_val = predict(df_val, dv, model)
+            rmse = get_rmse(y_val, y_pred_val)
+            mlflow.log_metric("rmse", rmse) 
 
-        with open("models/preprocesor.b", "wb") as f_out:
-            pickle.dump(dv, f_out)
-
-        mlflow.log_artifact("models/preprocesor.b", artifact_path="preprocesor") #log model as artifact
-        os.remove("models/preprocesor.b")
-
-
-        # mlflow.log_artifact("models/preprocesor.b", artifact_path="preprocesor") #log model as artifact
-
-        # mlflow.sklearn.log_model(booster, artifact_path="artifacts") #saves model, different way
+        return {'loss':rmse, 'status':STATUS_OK}
 
 
+    xgb_params_search_space = {
+        'max_depth': scope.int(hp.choice('max_depth', [5, 10, 12, 13, 14, 20,30,40,50,100])),
+        'eta': scope.int(hp.choice('eta', [0, 0.001, 0.01, 0.1, 0.2, 0.3, 0.4, 0.6, 1, 2, 5, 10])),
+        'min_child_weight': 1,
+        'objective': 'reg:squarederror',
+        'nthread': 8,
+        'verbosity':0,
+        "seed":42
+    }
+
+    mlflow.xgboost.autolog()
+
+    best_result = fmin(
+        fn=objective,
+        space=xgb_params_search_space,
+        algo=tpe.suggest,
+        max_evals=50,
+        trials=Trials()
+    )
 
 
     # pretty predict
@@ -140,7 +152,7 @@ def run(data_input, model_output):
     # df_pred_val_result['y_pred_bool'] = df_pred_val_result['y_pred']>0.5
     # df_pred_val_result['y_val'] = y_val
     # print(df_pred_val_result.head())
-    # # df_pred_val_result[df_pred_val_result.y_pred_bool!=df_pred_val_result.y_val]
+# # df_pred_val_result[df_pred_val_result.y_pred_bool!=df_pred_val_result.y_val]
 
 
 
