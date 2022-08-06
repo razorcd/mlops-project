@@ -1,8 +1,20 @@
-#### Start MlFlow
+#### Start MlFlow 
+- locally:
 ```
-mlflow server --backend-store-uri sqlite:///mlflow1.db --port 5051 --default-artifact-root file:///home/cristiandugacicu/projects/personal/mlops-zoomcamp/hw2/artifacts
-mlflow ui --backend-store-uri sqlite:///mlflow.db -p 5052
+SERVER and UI: mlflow server --backend-store-uri sqlite:///mlflow1.db --port 5051 --default-artifact-root file:///home/cristiandugacicu/projects/personal/mlops-zoomcamp/hw2/artifacts
+
+ONLY UI: mlflow ui --backend-store-uri sqlite:///mlflow.db -p 5052
 ```    
+- docker:
+```
+mkdir /tmp/mlops
+mkdir /tmp/mlopsdb
+mkdir /tmp/mlopsartifacts
+
+docker run --rm --name mlflow5 -v /tmp/mlopsdb:/tmp/mlopsdb -v /tmp/mlopsartifacts:/tmp/mlopsartifacts -p 5051:5050 mlflow_4
+OR
+docker-compose up
+```
 
 ### Build model:
 ```

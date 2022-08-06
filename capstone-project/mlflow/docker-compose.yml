@@ -1,5 +1,6 @@
 version: '3.3'
 services:
+    # docker run --rm --name mlflow5 -v /tmp/mlopsdb:/tmp/mlopsdb -v /tmp/mlopsartifacts:/tmp/mlopsartifacts -p 5051:5050 mlflow_4
     mlflow_server:
         restart: always
         build:
@@ -14,9 +15,10 @@ services:
         networks:
             - frontend
             - backend
-        # environment:
+        # create these folders locally:
         volumes:
           - /tmp/mlopsdb:/tmp/mlopsdb
+          - /tmp/mlopsartifacts:/tmp/mlopsartifacts
 
     # nginx:
     #     restart: always
