@@ -19,6 +19,8 @@ mlflow = "*"
 argparse = "*"
 hyperopt = "*"
 prefect = "==2.0b5"
+boto3 = "*"
+s3fs = "*"
 
 [requires]
 python_version = "3.8"

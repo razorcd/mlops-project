@@ -20,6 +20,9 @@ from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 from mlflow.tracking import MlflowClient
 from mlflow.entities import ViewType
 
+s3_storage_options = {
+        'client_kwargs': {'endpoint_url': 'http://localhost:4566'}
+    }
 
 def split_dataFrame(df_to_split, y_column):
     df_full_train, df_test = train_test_split(df_to_split, test_size=0.2, random_state=11)
@@ -99,8 +102,25 @@ def set_mlflow(experiment):
     mlflow.set_tracking_uri("http://localhost:5051")
     mlflow.set_experiment(experiment)
 
+def read_file(data_input):
+    if (data_input.startswith("s3")):
+        return pd.read_csv(
+            data_input,
+            engine='pyarrow',
+            storage_options=s3_storage_options
+        )
+    else: 
+        return pd.read_csv(data_input)
+
+def upload_to_s3(df):
+    df.to_csv(
+        "s3://capstone/ID1/credit_card_churn.csv",
+        storage_options=s3_storage_options
+    )
+
 def run(experiement, data_input):
-    df_clean = pd.read_csv(data_input)
+    df_clean = read_file(data_input)
+    # upload_to_s3(df_clean)
 
     y_column = "active_customer"
     train_columns = ["customer_age", "gender", "dependent_count", "education_level", "marital_status", "income_category", "card_category", "months_on_book", "total_relationship_count", "credit_limit", "total_revolving_bal"]

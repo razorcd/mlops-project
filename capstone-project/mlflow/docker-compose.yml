@@ -2,24 +2,41 @@ version: '3.3'
 services:
     # docker run --rm --name mlflow5 -v /tmp/mlopsdb:/tmp/mlopsdb -v /tmp/mlopsartifacts:/tmp/mlopsartifacts -p 5051:5050 mlflow_4
     mlflow_server:
-        restart: always
-        build:
-          context: .
-          dockerfile: Dockerfile-mlflow
-          # args:
-          #   buildno: 1
-        image: mlflow_server
-        container_name: mlflow_server
-        ports:
-            - 5051:5050
-        networks:
-            - frontend
-            - backend
-        # create these folders locally:
-        volumes:
-          - /tmp/mlopsdb:/tmp/mlopsdb
-          - /tmp/mlopsartifacts:/tmp/mlopsartifacts
+      restart: always
+      build:
+        context: .
+        dockerfile: Dockerfile-mlflow
+        # args:
+        #   buildno: 1
+      image: mlflow_server
+      container_name: mlflow_server
+      ports:
+        - 5051:5050
+      networks:
+        - frontend
+        - backend
+      # create these folders locally:
+      volumes:
+        - /tmp/mlopsdb:/tmp/mlopsdb
+        - /tmp/mlopsartifacts:/tmp/mlopsartifacts
 
+    prefect_server:
+      # docker run --rm --name prefectTest3 -p 4200:4200 -p 8080:8080 prefect_test3 
+      restart: always
+      build:
+        context: .
+        dockerfile: Dockerfile-prefect
+      image: "prefect_server"
+      container_name: "prefect_server"
+      ports:
+        - "4200:4200"
+        - "8080:8080"
+      networks:
+        - frontend
+        - backend  
+      volumes:
+        - /tmp/mlopsdb:/tmp/mlopsdb
+        - /tmp/mlopsartifacts:/tmp/mlopsartifacts        
     # nginx:
     #     restart: always
     #     build: ./nginx
@@ -32,11 +49,31 @@ services:
     #     depends_on:
     #         - web
 
+    localstack:
+      container_name: "localstack_main"
+      image: localstack/localstack
+      hostname: s3
+      ports:
+        - "127.0.0.1:4566:4566"            # LocalStack Gateway
+        - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+        - "127.0.0.1:53:53"                # DNS config (only required for Pro)
+        - "127.0.0.1:53:53/udp"            # DNS config (only required for Pro)
+        - "127.0.0.1:443:443"              # LocalStack HTTPS Gateway (only required for Pro)
+      environment:
+        - SERVICES=s3
+        - AWS_DEFAULT_REGION=eu-west-1
+        - AWS_ACCESS_KEY_ID=ID1
+        # - AWS_SECRET_ACCESS_KEY=KEY1
+        # - DEBUG=${DEBUG-}
+        # - PERSISTENCE=${PERSISTENCE-}
+        # - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR-}
+        # - LOCALSTACK_API_KEY=${LOCALSTACK_API_KEY-}  # only required for Pro
+        # - DOCKER_HOST=unix:///var/run/docker.sock
+      # volumes:
+      #   - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      #   - "/var/run/docker.sock:/var/run/docker.sock"
 networks:
     frontend:
         driver: bridge
     backend:
         driver: bridge
-
-volumes:
-    dbdata:

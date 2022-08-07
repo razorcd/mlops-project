@@ -21,9 +21,21 @@ from mlflow.entities import ViewType
 
 log = None
 
+s3_storage_options = {
+        'client_kwargs': {'endpoint_url': 'http://localhost:4566'}
+    }
+
 @task
-def read_data(input_data):
-    return pd.read_csv(data_input)
+def read_file(data_input):
+    if (data_input.startswith("s3")):
+        file = pd.read_csv(
+            data_input,
+            engine='pyarrow',
+            storage_options=s3_storage_options
+        )
+        return file
+    else: 
+        return pd.read_csv(data_input)
 
 @task
 def split_dataFrame(df_clean):
@@ -53,23 +65,22 @@ def split_dataFrame(df_clean):
     # with pd.option_context('display.max_rows', 2, 'display.max_columns', None): 
     #     display(df_test)   
 
-    log.info(f"""
-        df_to_split length: {len(df_to_split)}
+    # log.info(f"""
+    #     df_to_split length: {len(df_to_split)}
 
-        df_full_train length: {len(df_full_train)}
-        df_train length: {len(df_train)}
-        df_val length: {len(df_val)}
-        df_test length: {len(df_test)}
+    #     df_full_train length: {len(df_full_train)}
+    #     df_train length: {len(df_train)}
+    #     df_val length: {len(df_val)}
+    #     df_test length: {len(df_test)}
 
-        y_full_train length: {len(y_full_train)}
-        y_train length: {len(y_train)}
-        y_val length: {len(y_val)}
-        y_test length: {len(y_test)}
-    """)
+    #     y_full_train length: {len(y_full_train)}
+    #     y_train length: {len(y_train)}
+    #     y_val length: {len(y_val)}
+    #     y_test length: {len(y_test)}
+    # """)
 
     return df_full_train, df_train, df_val, df_test, y_full_train, y_train, y_val, y_test
 
-@task
 def train(dataFrame, y, xgb_params):
     # Hot Encoding
     dicts = dataFrame.to_dict(orient="records")
@@ -86,7 +97,6 @@ def train(dataFrame, y, xgb_params):
 
     return dv, model
 
-@task
 def predict(dataFrame, dv, model):
     dicts = dataFrame.to_dict(orient="records")
     X = dv.transform(dicts)
@@ -95,7 +105,6 @@ def predict(dataFrame, dv, model):
     y_pred = model.predict(dval)
     return y_pred, X
 
-@task
 def get_rmse(y_val, y_pred_val):
     mae = metrics.mean_absolute_error(y_val, y_pred_val)
     mse = metrics.mean_squared_error(y_val, y_pred_val)
@@ -167,7 +176,7 @@ def register_best_run(experiment_name):
 
     # select the model with the lowest test RMSE
     experiment = client.get_experiment_by_name(experiment_name)
-    log.info(experiment)
+    # log.info(experiment)
     best_runs = client.search_runs(
         experiment_ids=experiment.experiment_id,
         run_view_type=ViewType.ACTIVE_ONLY,
@@ -175,15 +184,15 @@ def register_best_run(experiment_name):
         order_by=["metrics.rmse ASC"]
     )
     
-    log.info(f'Models count: {len(best_runs)}')
+    # log.info(f'Models count: {len(best_runs)}')
     if (len(best_runs)==0): raise "No models found."
-    log.info(f'Top model found: {best_runs[0]}')
+    # log.info(f'Top model found: {best_runs[0]}')
 
     # register the best model
     model_uri = f"runs:/{best_runs[0].info.run_id}/model"
-    log.info(f'Registering {model_uri}')
+    # log.info(f'Registering {model_uri}')
     mv = mlflow.register_model(model_uri=model_uri, name = f"best_model-{experiment_name}")
-    log.info(f"Registrered model {mv.name}, version: {mv.version}")
+    # log.info(f"Registrered model {mv.name}, version: {mv.version}")
     # client.update_registered_model(
     #     name=mv.name,
     #     description=f"rmse={best_runs[0].data.metrics['rmse']}"
@@ -194,13 +203,15 @@ def register_best_run(experiment_name):
 def main():
     import subprocess
     subprocess.run('pwd')
+    
     log = get_run_logger()
 
-    experiment = "exp_flow_1"
-    data_input_path = "../input_clean/credit_card_churn_clean.csv"
+    experiment = "exp_flow_2"
+    # data_input_path = "../input_clean/credit_card_churn_clean.csv"
+    data_input_path = "s3://capstone/ID1/credit_card_churn_2022-08-07.csv"
 
     set_mlflow(experiment)
-    df_clean = read_data(data_input_path)
+    df_clean = read_file(data_input_path)
     df_full_train, df_train, df_val, df_test, y_full_train, y_train, y_val, y_test = split_dataFrame(df_clean).result()
     run_hyperoptimization(experiment, df_full_train, df_val, y_full_train, y_val)
     register_best_run(experiment)
