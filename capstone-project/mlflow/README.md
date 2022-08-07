@@ -32,6 +32,13 @@ deploy Prefect flow:
 prefect deployment create model_train_flow.py
 ```
 
+### Create prefect storage
+```
+prefect storage create
+  Select a storage type to create: 1
+  BASE PATH: /tmp/mlopsdb
+```
+
 ### Start working agents
 Prefect deployments only schedule runs. They don't execute.
 
@@ -45,7 +52,7 @@ prefect work-queue preview 32577ff0-f1bd-4da9-8b3a-ce8a89cab3ca
 
 - start working agent:
 ```
-prefect agent start 32577ff0-f1bd-4da9-8b3a-ce8a89cab3ca
+prefect agent start work_queue_1
 ```
 
 
@@ -68,5 +75,5 @@ aws s3 ls --endpoint-url=http://localhost:4566 s3://capstone/ID1 --recursive --h
 
 -copy file to s3:
 ```
-aws s3 cp ../input_raw/credit_card_churn.csv --endpoint-url=http://localhost:4566 s3://capstone/ID1/credit_card_churn_2022-08-07.csv
+aws s3 cp ../input_clean/credit_card_churn_clean.csv --endpoint-url=http://localhost:4566 s3://capstone/ID1/credit_card_churn_2022-08-07.csv
 ```

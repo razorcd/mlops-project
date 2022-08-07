@@ -18,11 +18,13 @@ from hyperopt.pyll import scope
 from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 from mlflow.tracking import MlflowClient
 from mlflow.entities import ViewType
+import pyarrow
 
 log = None
 
 s3_storage_options = {
-        'client_kwargs': {'endpoint_url': 'http://localhost:4566'}
+        # 'client_kwargs': {'endpoint_url': 'http://localhost:4566'}
+        'client_kwargs': {'endpoint_url': 'http://s3:4566'}
     }
 
 @task
@@ -118,7 +120,8 @@ def get_rmse(y_val, y_pred_val):
 @task
 def set_mlflow(experiment):
     # mlflow.set_tracking_uri("sqlite:///db/mlflow.db")
-    mlflow.set_tracking_uri("http://localhost:5051")
+    mlflow.set_tracking_uri("http://mlflow_server:5050")
+    # mlflow.set_tracking_uri("http://localhost:5051")
     mlflow.set_experiment(experiment)
 
 

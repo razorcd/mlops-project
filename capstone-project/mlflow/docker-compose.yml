@@ -19,6 +19,7 @@ services:
       volumes:
         - /tmp/mlopsdb:/tmp/mlopsdb
         - /tmp/mlopsartifacts:/tmp/mlopsartifacts
+        - /tmp/store:/tmp/store
 
     prefect_server:
       # docker run --rm --name prefectTest3 -p 4200:4200 -p 8080:8080 prefect_test3 
@@ -36,7 +37,19 @@ services:
         - backend  
       volumes:
         - /tmp/mlopsdb:/tmp/mlopsdb
-        - /tmp/mlopsartifacts:/tmp/mlopsartifacts        
+        - /tmp/mlopsartifacts:/tmp/mlopsartifacts  
+        - /tmp/store:/tmp/store      
+
+
+    # agent:
+    #     build: .
+    #     restart: always
+    #     command: bash -c "prefect agent local start --name $$(uuid) --no-hostname-label --label development"
+    #     volumes:
+    #       - /tmp/store:/tmp/store
+    #     networks:
+    #       - frontend
+    #       - backend  
     # nginx:
     #     restart: always
     #     build: ./nginx
@@ -54,15 +67,16 @@ services:
       image: localstack/localstack
       hostname: s3
       ports:
-        - "127.0.0.1:4566:4566"            # LocalStack Gateway
-        - "127.0.0.1:4510-4559:4510-4559"  # external services port range
-        - "127.0.0.1:53:53"                # DNS config (only required for Pro)
-        - "127.0.0.1:53:53/udp"            # DNS config (only required for Pro)
-        - "127.0.0.1:443:443"              # LocalStack HTTPS Gateway (only required for Pro)
+        - "4566:4566"            # LocalStack Gateway
+        - "4510-4559:4510-4559"  # external services port range
+        - "53:53"                # DNS config (only required for Pro)
+        - "53:53/udp"            # DNS config (only required for Pro)
+        - "443:443"              # LocalStack HTTPS Gateway (only required for Pro)
       environment:
         - SERVICES=s3
         - AWS_DEFAULT_REGION=eu-west-1
         - AWS_ACCESS_KEY_ID=ID1
+        # - LOCALSTACK_HOSTNAME=localhost
         # - AWS_SECRET_ACCESS_KEY=KEY1
         # - DEBUG=${DEBUG-}
         # - PERSISTENCE=${PERSISTENCE-}
@@ -72,6 +86,9 @@ services:
       # volumes:
       #   - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
       #   - "/var/run/docker.sock:/var/run/docker.sock"
+      networks:
+        - frontend
+        - backend  
 networks:
     frontend:
         driver: bridge
