@@ -32,6 +32,24 @@ deploy Prefect flow:
 prefect deployment create model_train_flow.py
 ```
 
+### Start working agents
+Prefect deployments only schedule runs. They don't execute.
+
+Working agents are required to execute scheduled deployments:
+- create working queue:
+```
+prefect work-queue create work_queue_1
+prefect work-queue ls
+prefect work-queue preview 32577ff0-f1bd-4da9-8b3a-ce8a89cab3ca
+```
+
+- start working agent:
+```
+prefect agent start 32577ff0-f1bd-4da9-8b3a-ce8a89cab3ca
+```
+
+
+
 ### AWS S3 setup:
 - create S3 bucket:
 ```

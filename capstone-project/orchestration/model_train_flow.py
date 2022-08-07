@@ -216,4 +216,20 @@ def main():
     run_hyperoptimization(experiment, df_full_train, df_val, y_full_train, y_val)
     register_best_run(experiment)
 
-main()    
+# main()    
+
+
+
+#deploy scheduled runs:
+from prefect.deployments import DeploymentSpec
+from prefect.orion.schemas.schedules import IntervalSchedule
+from prefect.flow_runners import SubprocessFlowRunner
+from datetime import timedelta
+
+DeploymentSpec(
+    flow=main,
+    name="model_tuning_and_uploading",
+    schedule=IntervalSchedule(interval=timedelta(minutes=5)),
+    flow_runner=SubprocessFlowRunner(),
+    tags=["ml"]
+)
