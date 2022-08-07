@@ -2,11 +2,12 @@ FROM python:3.8
 
 COPY Pipfile* .
 RUN pip install pipenv 
-RUN pipenv install
+# RUN pipenv install
 
 RUN pip install --no-cache-dir prefect==2.0b5
 
 RUN prefect config set PREFECT_ORION_UI_API_URL="http://127.0.0.1:4200/api"
+
 RUN prefect config view
 
 RUN mkdir /tmp/store

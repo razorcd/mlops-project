@@ -1,8 +1,0 @@
-FROM python:3.8
-
-COPY ../Pipfile Pipfile
-COPY ../Pipfile.lock Pipfile.lock
-
-RUN apt update && apt install uuid -y
-RUN pip install pipenv
-RUN pipenv install

@@ -1,0 +1,15 @@
+active = "default"
+
+[profiles.default]
+PREFECT_ORION_UI_API_URL = "http://prefect_server:4200/api"
+
+# base configuration directory (typically you won't change this!)
+#home_dir = "~/.prefect"
+
+# backend = "server"
+
+[server]
+host = "http:/prefect_server"
+port = "4200"
+host_port = "4200"
+endpoint = "${server.host}:${server.port}"

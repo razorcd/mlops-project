@@ -22,9 +22,11 @@ import pyarrow
 
 log = None
 
+# 'client_kwargs': {'endpoint_url': 'http://localhost:4566'}
 s3_storage_options = {
-        # 'client_kwargs': {'endpoint_url': 'http://localhost:4566'}
-        'client_kwargs': {'endpoint_url': 'http://s3:4566'}
+        'key': 'ID1',
+        'secret' : 'None',
+        'client_kwargs': {'endpoint_url': 'http://s3:4566', 'region_name': 'eu-west-1'}
     }
 
 @task
