@@ -18,6 +18,7 @@ mlops = "*"
 mlflow = "*"
 argparse = "*"
 hyperopt = "*"
+prefect = "==2.0b5"
 
 [requires]
 python_version = "3.8"
