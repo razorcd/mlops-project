@@ -77,3 +77,11 @@ aws s3 ls --endpoint-url=http://localhost:4566 s3://capstone/ID1 --recursive --h
 ```
 aws s3 cp ../input_clean/credit_card_churn_clean.csv --endpoint-url=http://localhost:4566 s3://capstone/ID1/credit_card_churn_2022-08-07.csv
 ```
+
+# Quick setup
+
+```
+docker-compose up
+aws s3 mb s3://capstone --endpoint-url=http://localhost:4566  && aws s3 cp ../input_clean/credit_card_churn_clean.csv --endpoint-url=http://localhost:4566 s3://capstone/ID1/credit_card_churn_2022-08-07.csv
+docker exec -ti prefect_agent_1 pipenv run prefect storage create
+```

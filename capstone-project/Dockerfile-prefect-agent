@@ -13,6 +13,5 @@ RUN pipenv run prefect config set PREFECT_ORION_UI_API_URL="http://prefect_serve
 RUN pipenv run prefect config set PREFECT_API_URL="http://prefect_server:4200/api"
 
 RUN pipenv run prefect config view
-RUN pipenv run prefect work-queue create work_queue_3
 
-CMD pipenv run prefect agent start work_queue_3
+ENTRYPOINT pipenv run prefect work-queue create work_queue_3 && pipenv run prefect agent start work_queue_3
