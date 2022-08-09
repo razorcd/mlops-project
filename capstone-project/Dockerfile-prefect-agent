@@ -14,4 +14,6 @@ RUN pipenv run prefect config set PREFECT_API_URL="http://prefect_server:4200/ap
 
 RUN pipenv run prefect config view
 
-ENTRYPOINT pipenv run prefect work-queue create work_queue_3 && pipenv run prefect agent start work_queue_3
+COPY orchestration/setup_prefect.sh .
+
+ENTRYPOINT  sleep 15 && sh setup_prefect.sh && pipenv run prefect agent start work_queue_3
