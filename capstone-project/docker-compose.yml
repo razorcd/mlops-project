@@ -26,6 +26,8 @@ services:
       build:
         context: .
         dockerfile: Dockerfile-prefect
+      logging:
+        driver: none
       image: "prefect_server"
       container_name: "prefect_server"
       ports:
