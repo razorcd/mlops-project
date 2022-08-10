@@ -20,6 +20,12 @@ prefect = "==2.0b5"
 boto3 = "*"
 s3fs = "*"
 pyarrow = "*"
+flask = "*"
+gunicorn = "*"
+
+[dev-packages]
+requests = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.8"

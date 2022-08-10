@@ -234,7 +234,7 @@ from datetime import timedelta
 DeploymentSpec(
     flow=main,
     name="model_tuning_and_uploading",
-    schedule=IntervalSchedule(interval=timedelta(minutes=5)),
+    schedule=IntervalSchedule(interval=timedelta(minutes=60)),
     flow_runner=SubprocessFlowRunner(),
     tags=["ml"]
 )
