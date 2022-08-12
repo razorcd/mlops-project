@@ -47,7 +47,8 @@ class ModelService():
         return y_pred[0]
         
 
-mlflow.set_tracking_uri("http://127.0.0.1:5051")
+# mlflow.set_tracking_uri("http://127.0.0.1:5051")
+mlflow.set_tracking_uri("http://mlflow_server:5050")
 mlflow.set_experiment("exp_flow_2")
 
 app = Flask('duration-prediction')
@@ -55,20 +56,21 @@ app = Flask('duration-prediction')
 
 log = logging.getLogger('gunicorn.error')
 app.logger.handlers = log.handlers
-
+    
 from mlflow.tracking import MlflowClient
 client = MlflowClient()
 
 
-RUN_ID = os.getenv('RUN_ID', 'a3e401572f52427783b5497aa7ef4f09')
+RUN_ID = os.getenv('RUN_ID', '6502edde2c0c46a5b11cad8b7ea6377c')
 # mlflow_model_path = f'models:/best_model-exp_flow_2/Staging'
 mlflow_model_path = f'runs:/{RUN_ID}/model'
 # mlflow_dv_path = f'mlflow-artifacts:/best_model-exp_flow_2/Staging'
 
+if not os.path.exists('/tmp/serve'): os.mkdir('/tmp/serve')
 model = mlflow.xgboost.load_model(mlflow_model_path)
-client.download_artifacts(RUN_ID, "preprocesor", './tmp')
+client.download_artifacts(RUN_ID, "preprocesor", '/tmp/serve')
 
-with open('tmp/preprocesor/preprocesor.b', 'rb') as f_in:
+with open('/tmp/serve/preprocesor/preprocesor.b', 'rb') as f_in:
     dv = pickle.load(f_in)
 modelService = ModelService(model, dv)
 

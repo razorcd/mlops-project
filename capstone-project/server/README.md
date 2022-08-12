@@ -1,4 +1,4 @@
-### Start server:
+### Start server locally:
 
 ```
 gunicorn --bind=0.0.0.0:9696 --chdir=server --log-level=debug  predict:app

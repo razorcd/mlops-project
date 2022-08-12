@@ -81,7 +81,21 @@ aws s3 cp ../input_clean/credit_card_churn_clean.csv --endpoint-url=http://local
 # Quick setup
 
 ```
+mkdir /tmp/mlopsdb
+mkdir /tmp/mlopsartifacts  
+mkdir /tmp/store   
+mkdir /tmp/serve   
 docker-compose up
 aws s3 mb s3://capstone --endpoint-url=http://localhost:4566  && aws s3 cp ../input_clean/credit_card_churn_clean.csv --endpoint-url=http://localhost:4566 s3://capstone/ID1/credit_card_churn_2022-08-07.csv
 prefect deployment create model_train_flow.py
+```
+
+
+### Start serve
+```
+docker build -t serve -f Dockerfile-serve .
+
+docker run --rm --name=serve -p 9696:9696 --network=capstone-project_backend -v /tmp/serve:/tmp/serve -v /tmp/mlopsartifacts:/tmp/mlopsartifacts --env RUN_ID="541c7963880041319d17d2ee7a38003b" serve
+
+curl -X POST -H 'Content-Type: application/json' localhost:9696/predict -d '{"customer_age":100,"gender":"F","dependent_count":2,"education_level":2,"marital_status":"married","income_category":2,"card_category":"blue","months_on_book":6,"total_relationship_count":3,"credit_limit":4000,"total_revolving_bal":2500}'
 ```
