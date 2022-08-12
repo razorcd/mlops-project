@@ -1,4 +1,5 @@
 from ast import Mod
+from multiprocessing.pool import RUN
 import os
 import logging
 import pickle
@@ -44,7 +45,7 @@ class ModelService():
         
 
 mlflow.set_tracking_uri("http://127.0.0.1:5051")
-mlflow.set_experiment("green-taxi-duration")
+mlflow.set_experiment("exp_flow_2")
 
 app = Flask('duration-prediction')
 # log = app.logger
@@ -55,20 +56,18 @@ app.logger.handlers = log.handlers
 from mlflow.tracking import MlflowClient
 client = MlflowClient()
 
-   
-# with open('../model.bin', 'rb') as f_in:
-#     dv, model = pickle.load(f_in)
+
+RUN_ID = os.getenv('RUN_ID', 'a3e401572f52427783b5497aa7ef4f09')
 # mlflow_model_path = f'models:/best_model-exp_flow_2/Staging'
-mlflow_model_path = f'runs:/4a69b176cc654dd0a1852a7ce40c66b7/model'
-mlflow_dv_path = f'mlflow-artifacts:/best_model-exp_flow_2/Staging'
+mlflow_model_path = f'runs:/{RUN_ID}/model'
+# mlflow_dv_path = f'mlflow-artifacts:/best_model-exp_flow_2/Staging'
 
-model = mlflow.pyfunc.load_model(mlflow_model_path)
-client.download_artifacts('4a69b176cc654dd0a1852a7ce40c66b7', "preprocesor", '.')
+model = mlflow.xgboost.load_model(mlflow_model_path)
+client.download_artifacts(RUN_ID, "preprocesor", './tmp')
 
-with open('preprocesor/preprocesor.b', 'rb') as f_in:
+with open('tmp/preprocesor/preprocesor.b', 'rb') as f_in:
     dv = pickle.load(f_in)
 modelService = ModelService(model, dv)
-
 
 
 
@@ -83,8 +82,8 @@ def predict_endpoint():
     pred = modelService.predict(features)
 
     result = {
-        'duration': float(str(pred)),
-        'model_version': 'model.version'
+        'churn chance': float(str(pred)),
+        'model_run_id': RUN_ID
     }
 
     log.info(f'Response: {result}')
@@ -98,17 +97,17 @@ if __name__ == "__main__":
 
 
 
-
-# {
-# 'customer_age': 100,
-# 'gender': 'F',
-# 'dependent_count': 2,
-# 'education_level': 2,
-# 'marital_status': 'married',
-# 'income_category': 2,
-# 'card_category': 'blue',
-# 'months_on_book': 6,
-# 'total_relationship_count': 3,
-# 'credit_limit': 4000,
-# 'total_revolving_bal': 2500,
-# }
+# GET payload:
+    # {
+    #   'customer_age': 100,
+    #   'gender': 'F',
+    #   'dependent_count': 2,
+    #   'education_level': 2,
+    #   'marital_status': 'married',
+    #   'income_category': 2,
+    #   'card_category': 'blue',
+    #   'months_on_book': 6,
+    #   'total_relationship_count': 3,
+    #   'credit_limit': 4000,
+    #   'total_revolving_bal': 2500,
+    # }
