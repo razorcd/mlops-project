@@ -1,6 +1,10 @@
 # Capstone Project for ML Ops course
 Build an end-to-end machine learning pipeline project
 
+
+
+# Project content
+
 ## Input data
 
 Data: Credit Card Churn Prediction
@@ -18,11 +22,11 @@ Source: https://www.kaggle.com/datasets/anwarsan/credit-card-bank-churn
 - [x] train model
 - [x] ml pipeline for hiperparameter tuning
 - [x] model registry
-- [ ] ML-serve server
+- [x] ML-serve server
 - [ ] tests
 - [ ] linters
 - [ ] Makefile and CI
-- [ ] logging and monitoring
+- [x] logging and monitoring
 
 ## Data cleanup
 
