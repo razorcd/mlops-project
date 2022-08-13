@@ -1,0 +1,109 @@
+version: '3.7'
+
+volumes:
+    prometheus_data: {}
+    grafana_data: {}
+    mongo_data: {}
+
+networks:
+    backend:
+        driver: bridge
+
+services:
+#   prediction_service:
+#     build:
+#       context: prediction_service
+#       dockerfile: Dockerfile
+#     depends_on:
+#       - evidently_service
+#       - mongo
+#     environment:
+#       EVIDENTLY_SERVICE: "http://evidently_service.:8085"
+#       MONGODB_ADDRESS: "mongodb://mongo.:27017/"
+#     ports:
+#       - "9696:9696"
+#     networks:
+#       - back-tier
+#       - front-tier
+
+  evidently_service:
+    build:
+      context: monitoring/evidently_service
+      dockerfile: Dockerfile
+    depends_on:
+      - grafana
+    volumes:
+      - ./monitoring/evidently_service/datasets:/app/datasets
+      - ./monitoring/evidently_service/config.yaml:/app/config.yaml
+    ports:
+      - "8085:8085"
+    networks:
+      - backend
+
+  serve:
+    build: .
+    restart: always
+    depends_on:
+      - prefect_server
+      - localstack
+      - mlflow_server
+      - agent
+      - evidently_service
+      - mongo
+    build:
+      context: .
+      dockerfile: Dockerfile-serve
+    image: "serve"
+    container_name: "serve"
+    ports:
+      - "9696:9696"
+    environment:
+      RUN_ID: 541c7963880041319d17d2ee7a38003b
+      EVIDENTLY_SERVICE: "http://evidently_service.:8085"
+      MONGODB_ADDRESS: "mongodb://mongo.:27017/"
+    volumes:
+      - /tmp/mlopsdb:/tmp/mlopsdb
+      - /tmp/mlopsartifacts:/tmp/mlopsartifacts
+      - /tmp/store:/tmp/store
+      - /tmp/serve:/tmp/serve
+    networks:
+      - backend  
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./monitoring/evidently_service/config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - "9091:9090"
+    networks:
+      - backend
+    restart: always
+
+  grafana:
+    image: grafana/grafana
+    user: "472"
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./monitoring/evidently_service/config/grafana_datasources.yaml:/etc/grafana/provisioning/datasources/datasource.yaml:ro
+      - ./monitoring/evidently_service/config/grafana_dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
+      - ./monitoring/evidently_service/dashboards:/opt/grafana/dashboards
+      - ./monitoring/grafana_data:/var/lib/grafana
+    networks:
+      - backend
+    restart: always
+  mongo:
+    image: mongo
+    ports:
+      - "27018:27017"
+    volumes:
+      - ./monitoring/mongo_data:/data/db
+    networks:
+      - backend
+

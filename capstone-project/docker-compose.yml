@@ -88,31 +88,6 @@ services:
       networks:
         - backend  
 
-    # serve:
-    #   build: .
-    #   restart: always
-    #   depends_on:
-    #     - prefect_server
-    #     - localstack
-    #     - mlflow_server
-    #     - agent
-    #   build:
-    #     context: .
-    #     dockerfile: Dockerfile-serve
-    #   image: "serve"
-    #   container_name: "serve"
-    #   ports:
-    #     - "9696:9696"
-    #   environment:
-    #     - RUN_ID=541c7963880041319d17d2ee7a38003b
-    #   volumes:
-    #     - /tmp/mlopsdb:/tmp/mlopsdb
-    #     - /tmp/mlopsartifacts:/tmp/mlopsartifacts
-    #     - /tmp/store:/tmp/store
-    #     - /tmp/serve:/tmp/serve
-    #   networks:
-    #     - backend  
-
 
 networks:
     backend:
