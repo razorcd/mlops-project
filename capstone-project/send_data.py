@@ -5,7 +5,7 @@ from time import sleep
 import pyarrow.csv as pcsv
 import requests
 
-SERVE_ADDRESS = os.get_env('SERVE_ADDRESS', 'http://127.0.0.1:9696/predict')
+SERVE_ADDRESS = os.getenv('SERVE_ADDRESS', 'http://127.0.0.1:9696/predict')
 
 table = pcsv.read_csv("input_clean/credit_card_churn_clean.csv")
 data = table.to_pylist()
@@ -35,4 +35,4 @@ for row in data:
                             data=json.dumps(row)) \
                     .json()
     print(f"Response: {resp}\n")
-    sleep(60*2)
+    sleep(30*1)

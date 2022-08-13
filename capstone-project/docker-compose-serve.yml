@@ -37,38 +37,38 @@ services:
       - ./monitoring/evidently_service/config.yaml:/app/config.yaml
     ports:
       - "8085:8085"
-      - "5000:5000"
     networks:
       - backend
 
-  # serve:
-  #   build: .
-  #   restart: always
-  #   depends_on:
-  #     - prefect_server
-  #     - localstack
-  #     - mlflow_server
-  #     - agent
-  #     - evidently_service
-  #     - mongo
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile-serve
-  #   image: "serve"
-  #   container_name: "serve"
-  #   ports:
-  #     - "9696:9696"
-  #   environment:
-  #     RUN_ID: 541c7963880041319d17d2ee7a38003b
-  #     EVIDENTLY_SERVICE: "http://evidently_service.:5000"
-  #     MONGODB_ADDRESS: "mongodb://mongo.:27017/"
-  #   volumes:
-  #     - /tmp/mlopsdb:/tmp/mlopsdb
-  #     - /tmp/mlopsartifacts:/tmp/mlopsartifacts
-  #     - /tmp/store:/tmp/store
-  #     - /tmp/serve:/tmp/serve
-  #   networks:
-  #     - backend  
+  serve:
+    build: .
+    restart: always
+    depends_on:
+      - prefect_server
+      - localstack
+      - mlflow_server
+      - agent
+      - evidently_service
+      - mongo
+    build:
+      context: .
+      dockerfile: Dockerfile-serve
+    image: "serve"
+    container_name: "serve"
+    ports:
+      - "9696:9696"
+    environment:
+      RUN_ID: c5476a487fdb4475b455969912e47209
+      EVIDENTLY_SERVICE: "http://evidently_service.:8085"
+      MONGODB_ADDRESS: "mongodb://mongo.:27017/"
+      MLFLOW_ADDRESS: "http://mlflow_server:5050"
+    volumes:
+      - /tmp/mlopsdb:/tmp/mlopsdb
+      - /tmp/mlopsartifacts:/tmp/mlopsartifacts
+      - /tmp/store:/tmp/store
+      - /tmp/serve:/tmp/serve
+    networks:
+      - backend  
 
   prometheus:
     image: prom/prometheus
