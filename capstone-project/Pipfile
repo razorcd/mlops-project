@@ -22,9 +22,12 @@ s3fs = "*"
 pyarrow = "*"
 flask = "*"
 gunicorn = "*"
+pymongo = "*"
+evidently = "*"
+requests = "*"
+prometheus-client = "==0.11.0"
 
 [dev-packages]
-requests = "*"
 pytest = "*"
 
 [requires]

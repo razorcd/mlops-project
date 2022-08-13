@@ -12,4 +12,7 @@ RUN pip3 install evidently
 
 COPY app.py .
 
+EXPOSE 8085
+EXPOSE 5000
+
 CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "--port=8085"]

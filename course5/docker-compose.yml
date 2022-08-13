@@ -25,6 +25,8 @@ services:
     networks:
       - back-tier
       - front-tier
+
+      
   evidently_service:
     build:
       context: evidently_service

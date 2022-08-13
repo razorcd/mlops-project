@@ -12,6 +12,9 @@ import mlflow
 from pandas import DataFrame
 import xgboost as xgb
 from flask import Flask, request, jsonify
+from pymongo import MongoClient
+import requests
+
 
 
 class ModelService():
@@ -47,8 +50,14 @@ class ModelService():
         return y_pred[0]
         
 
-# mlflow.set_tracking_uri("http://127.0.0.1:5051")
-mlflow.set_tracking_uri("http://mlflow_server:5050")
+
+EVIDENTLY_SERVICE_ADDRESS = os.getenv('EVIDENTLY_SERVICE', 'http://127.0.0.1:8085')
+MONGODB_ADDRESS = os.getenv("MONGODB_ADDRESS", "mongodb://127.0.0.1:27018")
+MLFLOW_ADDRESS = os.getenv("MLFLOW_ADDRESS", "http://127.0.0.1:5051")
+# MLFLOW_ADDRESS = os.getenv("MLFLOW_ADDRESS", "http://mlflow_server:5050")
+RUN_ID = os.getenv('RUN_ID', '6502edde2c0c46a5b11cad8b7ea6377c')
+
+mlflow.set_tracking_uri(MLFLOW_ADDRESS)
 mlflow.set_experiment("exp_flow_2")
 
 app = Flask('duration-prediction')
@@ -56,15 +65,14 @@ app = Flask('duration-prediction')
 
 log = logging.getLogger('gunicorn.error')
 app.logger.handlers = log.handlers
-    
+
 from mlflow.tracking import MlflowClient
 client = MlflowClient()
 
 
-RUN_ID = os.getenv('RUN_ID', '6502edde2c0c46a5b11cad8b7ea6377c')
 # mlflow_model_path = f'models:/best_model-exp_flow_2/Staging'
 mlflow_model_path = f'runs:/{RUN_ID}/model'
-# mlflow_dv_path = f'mlflow-artifacts:/best_model-exp_flow_2/Staging'
+# mlflow_dv_path = f'mlflow-artifacts:/best_model-exp   _flow_2/Staging'
 
 if not os.path.exists('/tmp/serve'): os.mkdir('/tmp/serve')
 model = mlflow.xgboost.load_model(mlflow_model_path)
@@ -74,16 +82,20 @@ with open('/tmp/serve/preprocesor/preprocesor.b', 'rb') as f_in:
     dv = pickle.load(f_in)
 modelService = ModelService(model, dv)
 
+#DB
+mongo_client = MongoClient(MONGODB_ADDRESS)
+db = mongo_client.get_database("prediction_service")
+collection = db.get_collection("data")
 
 
 @app.route('/predict', methods=['POST'])
 def predict_endpoint():
     log.info(f'Request payload: {request.get_data()}')
 
-    ride = request.get_json()
-    log.info(f'Request json: {ride}')
+    input = request.get_json()
+    log.info(f'Request json: {input}')
 
-    features = modelService.prepare_features(ride)
+    features = modelService.prepare_features(input)
     pred = modelService.predict(features)
 
     result = {
@@ -91,8 +103,24 @@ def predict_endpoint():
         'model_run_id': RUN_ID
     }
 
+    save_to_db(input, float(pred))
+    send_to_evidently_service(input, float(pred))
+    
     log.info(f'Response: {result}')
     return jsonify(result)
+
+
+def save_to_db(record, prediction):
+    rec = record.copy()
+    rec['prediction'] = prediction
+    collection.insert_one(rec)
+
+
+def send_to_evidently_service(record, prediction):
+    rec = record.copy()
+    rec['prediction'] = prediction
+    requests.post(f"{EVIDENTLY_SERVICE_ADDRESS}/iterate/capstone", json=[rec])
+
 
 
 if __name__ == "__main__":

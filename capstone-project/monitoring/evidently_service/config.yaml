@@ -1,17 +1,25 @@
 datasets:
-  taxi:
+  capstone:
     column_mapping:
       categorical_features:
-        - 'PULocationID'
-        - 'DOLocationID'
+        - 'gender'
+        - 'marital_status'
+        - 'card_category'
       numerical_features:
-        - 'trip_distance'
+        - 'customer_age'
+        - 'dependent_count'
+        - 'education_level'
+        - 'income_category'
+        - 'months_on_book'
+        - 'total_relationship_count'
+        - 'credit_limit'
+        - 'total_revolving_bal'
     data_format:
       header: true
       separator: ','
     monitors:
       - data_drift
-    reference_file: ./datasets/green_tripdata_2021-01.parquet
+    reference_file: ./datasets/credit_card_churn_clean.csv
 service:
   calculation_period_sec: 2
   min_reference_size: 30
