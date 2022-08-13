@@ -22,11 +22,14 @@ Source: https://www.kaggle.com/datasets/anwarsan/credit-card-bank-churn
 - [x] train model
 - [x] ml pipeline for hiperparameter tuning
 - [x] model registry
-- [x] ML-serve server
+- [x] ML-serve API server
+- [ ] ML-serve Stream server (optional)
 - [ ] tests
 - [ ] linters
 - [ ] Makefile and CI
 - [x] logging and monitoring
+- [x] batch reporting
+- [x] docker and docker-compose everything
 
 ## Data cleanup
 
