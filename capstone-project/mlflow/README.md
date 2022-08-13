@@ -80,12 +80,13 @@ aws s3 cp ../input_clean/credit_card_churn_clean.csv --endpoint-url=http://local
 
 # Quick setup
 
+Model registry pipeline:
 ```
 mkdir /tmp/mlopsdb
 mkdir /tmp/mlopsartifacts  
 mkdir /tmp/store   
 mkdir /tmp/serve   
-docker-compose -f docker-compose.yml up --build --force-recreate
+docker-compose -f docker-compose-model-registry.yml up --build --force-recreate
 aws s3 mb s3://capstone --endpoint-url=http://localhost:4566  && aws s3 cp ../input_clean/credit_card_churn_clean.csv --endpoint-url=http://localhost:4566 s3://capstone/ID1/credit_card_churn_2022-08-07.csv
 prefect deployment create model_train_flow.py
 ```
@@ -97,7 +98,7 @@ python send_data.py
 ```
 
 
-### Start serve
+### Start serve separately
 ```
 docker build -t serve -f Dockerfile-serve .
 
