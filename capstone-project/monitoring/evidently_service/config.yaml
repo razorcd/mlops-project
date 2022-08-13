@@ -19,7 +19,7 @@ datasets:
       separator: ','
     monitors:
       - data_drift
-    reference_file: ./datasets/credit_card_churn_clean.csv
+    reference_file: ./datasets/credit_card_churn_clean.parquet
 service:
   calculation_period_sec: 2
   min_reference_size: 30
