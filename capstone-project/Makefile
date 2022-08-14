@@ -9,6 +9,9 @@ LOCAL_TAG:=$(shell date +"%Y-%m-%d-%H-%M")
 #   aws cli
 #   pip3b install prefect==2.0b5
 
+CLOUD_ADDRESS: 188.166.115.79
+RUN_ID: b41f75075ba143cfb016f8441c96eba9
+
 help:
 	@echo "\nTARGETS:\n"
 	@make -qpRr | egrep -e '^[a-z].*:' | sed -e 's~:~~g' | sort
