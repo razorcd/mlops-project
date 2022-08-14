@@ -6,26 +6,12 @@ volumes:
     mongo_data: {}
 
 networks:
+    external:
+      driver: bridge
     backend:
-        driver: bridge
+      driver: bridge
 
 services:
-#   prediction_service:
-#     build:
-#       context: prediction_service
-#       dockerfile: Dockerfile
-#     depends_on:
-#       - evidently_service
-#       - mongo
-#     environment:
-#       EVIDENTLY_SERVICE: "http://evidently_service.:8085"
-#       MONGODB_ADDRESS: "mongodb://mongo.:27017/"
-#     ports:
-#       - "9696:9696"
-#     networks:
-#       - back-tier
-#       - front-tier
-
   evidently_service:
     build:
       context: monitoring/evidently_service
@@ -42,36 +28,6 @@ services:
       - "8085:8085"
     networks:
       - backend
-
-  serve:
-    build: .
-    restart: always
-    depends_on:
-      - prefect_server
-      - localstack
-      - mlflow_server
-      - agent
-      - evidently_service
-      - mongo
-    build:
-      context: .
-      dockerfile: Dockerfile-serve
-    image: "serve"
-    container_name: "serve"
-    ports:
-      - "9696:9696"
-    environment:
-      RUN_ID: $RUN_ID
-      EVIDENTLY_SERVICE: "http://evidently_service.:8085"
-      MONGODB_ADDRESS: "mongodb://mongo.:27017/"
-      MLFLOW_ADDRESS: "http://mlflow_server:5050"
-    volumes:
-      - /tmp/mlopsdb:/tmp/mlopsdb
-      - /tmp/mlopsartifacts:/tmp/mlopsartifacts
-      - /tmp/store:/tmp/store
-      - /tmp/serve:/tmp/serve
-    networks:
-      - backend  
 
   prometheus:
     image: prom/prometheus
@@ -121,3 +77,50 @@ services:
     networks:
       - backend
 
+
+  serve:
+    build: .
+    restart: always
+    depends_on:
+      - prefect_server
+      - localstack
+      - mlflow_server
+      - agent
+      - evidently_service
+      - mongo
+    build:
+      context: .
+      dockerfile: Dockerfile-serve
+    image: "serve"
+    container_name: "serve"
+    ports:
+      - "9696:9696"
+    environment:
+      RUN_ID: $RUN_ID
+      EVIDENTLY_SERVICE: "http://evidently_service.:8085"
+      MONGODB_ADDRESS: "mongodb://mongo.:27017/"
+      MLFLOW_ADDRESS: "http://mlflow_server:5050"
+    volumes:
+      - /tmp/mlopsdb:/tmp/mlopsdb
+      - /tmp/mlopsartifacts:/tmp/mlopsartifacts
+      - /tmp/store:/tmp/store
+      - /tmp/serve:/tmp/serve
+    networks:
+      - backend  
+
+
+  send_data:
+    build: .
+    restart: always
+    depends_on:
+      - serve
+    build:
+      context: .
+      dockerfile: Dockerfile-prefect-agent
+    image: "send_data"
+    container_name: "send_data"
+    environment:
+      RUN_ID: $RUN_ID
+      SERVE_ADDRESS: http://$CLOUD_ADDRESS:9696/predict
+    networks:
+      - external

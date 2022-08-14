@@ -14,7 +14,10 @@ help:
 	@make -qpRr | egrep -e '^[a-z].*:$$' | sed -e 's~:~~g' | sort
 	@echo ""
 	
-setup-model-registry:
+init:
+	echo export CLOUD_ADDRESS=188.166.115.79 >>/etc/bash.bashrc
+
+setup-model-registry: init
 	mkdir -p /tmp/mlopsdb
 	mkdir -p /tmp/mlopsartifacts  
 	mkdir -p /tmp/store   
@@ -27,7 +30,9 @@ start-model-train-flow:
 	docker cp ./orchestration/model_train_flow.py prefect_agent_1:model_train_flow.py
 	docker exec prefect_agent_1 prefect deployment create model_train_flow.py
 
-setup-model-serve:
+setup-model-serve: init
+	chmod 777 monitoring/
+	chmod 777 monitoring/**/*
 	docker compose -f docker-compose-serve.yml  up --build --force-recreate
 
 # start-serve-requests:
