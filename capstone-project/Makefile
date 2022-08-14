@@ -11,7 +11,7 @@ LOCAL_TAG:=$(shell date +"%Y-%m-%d-%H-%M")
 
 help:
 	@echo "\nTARGETS:\n"
-	@make -qpRr | egrep -e '^[a-z].*:$$' | sed -e 's~:~~g' | sort
+	@make -qpRr | egrep -e '^[a-z].*:' | sed -e 's~:~~g' | sort
 	@echo ""
 	
 init:
