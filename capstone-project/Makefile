@@ -9,19 +9,11 @@ LOCAL_TAG:=$(shell date +"%Y-%m-%d-%H-%M")
 #   aws cli
 #   pip3b install prefect==2.0b5
 
-setup-model-serve: export CLOUD_ADDRESS = 188.166.115.79
-setup-model-serve: export RUN_ID = b41f75075ba143cfb016f8441c96eba9
-
 help:
 	@echo "\nTARGETS:\n"
 	@make -qpRr | egrep -e '^[a-z].*:' | sed -e 's~:~~g' | sort
 	@echo ""
 	
-# init:
-# printenv | grep CLOUD_ADDRESS
-# printenv | grep RUN_ID
-# echo export CLOUD_ADDRESS=188.166.115.79 >>/etc/bash.bashrc
-
 setup-model-registry:
 	mkdir -p /tmp/mlopsdb
 	mkdir -p /tmp/mlopsartifacts  
@@ -45,7 +37,7 @@ stop-serve:
 	docker rm -f send_data
 
 start-serve:
-	docker compose -f docker-compose-serve.yml up -d
+	docker compose --env-file=.env -f docker-compose-serve.yml up -d
 
 
 

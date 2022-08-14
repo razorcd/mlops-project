@@ -27,5 +27,5 @@ jobs:
       
       - run: ssh root@${{ secrets.SSH_HOST }} "cd mlops-training/capstone-project; git pull origin main"
       - run: ssh root@${{ secrets.SSH_HOST }} "cd mlops-training/capstone-project; make stop-serve"
-      - run: ssh root@${{ secrets.SSH_HOST }} "cd mlops-training/capstone-project; export RUN_ID=bdb3c17e12e34929be57ca55502cf25f; make start-serve"
+      - run: ssh root@${{ secrets.SSH_HOST }} "cd mlops-training/capstone-project; make start-serve"
 
