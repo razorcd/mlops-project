@@ -18,7 +18,7 @@ setup-model-registry:
 	mkdir -p /tmp/mlopsartifacts  
 	mkdir -p /tmp/store   
 	mkdir -p /tmp/serve   
-	docker compose -d -f docker-compose-model-registry.yml up --build --force-recreate
+	docker compose -f docker-compose-model-registry.yml up --build --force-recreate -d
 	
 
 start-model-train-flow:
@@ -27,7 +27,7 @@ start-model-train-flow:
 	prefect deployment create model_train_flow.py
 
 setup-model-serve:
-	docker compose -d -f docker-compose-serve.yml  up --build --force-recreate
+	docker compose -f docker-compose-serve.yml  up --build --force-recreate -d
 
 # start-serve-requests:
 # 	pipenv run python send_data.py &>/dev/null &   
