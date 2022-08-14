@@ -29,9 +29,12 @@ services:
   evidently_service:
     build:
       context: monitoring/evidently_service
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile  
     depends_on:
       - grafana
+    security_opt:
+      - seccomp:unconfined
+      - label:disable  
     volumes:
       - ./monitoring/evidently_service/datasets:/app/datasets
       - ./monitoring/evidently_service/config.yaml:/app/config.yaml
@@ -72,6 +75,9 @@ services:
 
   prometheus:
     image: prom/prometheus
+    security_opt:
+      - seccomp:unconfined
+      - label:disable  
     volumes:
       - ./monitoring/evidently_service/config/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./monitoring/prometheus_data:/prometheus
@@ -91,6 +97,9 @@ services:
       - prometheus
     ports:
       - "3000:3000"
+    security_opt:
+      - seccomp:unconfined
+      - label:disable    
     volumes:
       - ./monitoring/evidently_service/config/grafana_datasources.yaml:/etc/grafana/provisioning/datasources/datasource.yaml:ro
       - ./monitoring/evidently_service/config/grafana_dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
@@ -104,6 +113,9 @@ services:
     image: mongo
     ports:
       - "27018:27017"
+    security_opt:
+      - seccomp:unconfined
+      - label:disable    
     volumes:
       - ./monitoring/mongo_data:/data/db
     networks:
