@@ -15,11 +15,11 @@ help:
 	@echo ""
 	
 init:
-	export MLFLOW_RUN_ID=b41f75075ba143cfb016f8441c96eba9
 	export CLOUD_ADDRESS=188.166.115.79
-	printenv | grep MLFLOW_RUN_ID
+	export MLFLOW_RUN_ID=b41f75075ba143cfb016f8441c96eba9
 	printenv | grep CLOUD_ADDRESS
-	# echo export CLOUD_ADDRESS=188.166.115.79 >>/etc/bash.bashrc
+	printenv | grep MLFLOW_RUN_ID
+# echo export CLOUD_ADDRESS=188.166.115.79 >>/etc/bash.bashrc
 
 setup-model-registry: init
 	mkdir -p /tmp/mlopsdb
