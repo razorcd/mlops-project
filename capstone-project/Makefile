@@ -45,7 +45,7 @@ stop-serve:
 	docker rm -f send_data
 
 start-serve:
-	docker compose -f docker-compose-serve.yml up
+	docker compose -f docker-compose-serve.yml up -d
 
 
 
