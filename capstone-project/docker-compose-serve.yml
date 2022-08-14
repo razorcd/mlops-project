@@ -119,5 +119,7 @@ services:
       dockerfile: Dockerfile-prefect-agent
     image: "send_data"
     container_name: "send_data"
+    env_file:
+      - .env
     networks:
       - external
