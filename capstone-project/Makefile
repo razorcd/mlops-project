@@ -14,10 +14,10 @@ help:
 	@echo ""
 	
 setup-model-registry:
-	mkdir /tmp/mlopsdb
-	mkdir /tmp/mlopsartifacts  
-	mkdir /tmp/store   
-	mkdir /tmp/serve   
+	mkdir -p /tmp/mlopsdb
+	mkdir -p /tmp/mlopsartifacts  
+	mkdir -p /tmp/store   
+	mkdir -p /tmp/serve   
 	docker compose -d -f docker-compose-model-registry.yml up --build --force-recreate
 	
 
