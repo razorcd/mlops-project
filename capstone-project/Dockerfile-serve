@@ -1,11 +1,10 @@
 FROM python:3.8
 
-COPY Pipfile* .
-RUN pip install pipenv 
-RUN pipenv install
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
 COPY server/predict.py .
 
 EXPOSE 9696
 
-CMD pipenv run gunicorn --bind 0.0.0.0:9696 --workers 3 --log-level debug  predict:app
+CMD gunicorn --bind 0.0.0.0:9696 --workers 3 --log-level debug  predict:app

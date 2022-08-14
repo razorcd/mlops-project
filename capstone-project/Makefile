@@ -21,8 +21,6 @@ setup-model-registry:
 	mkdir -p /tmp/serve   
 	docker compose -f docker-compose-model-registry.yml up --build --force-recreate
 	
-BUCKET_EXISTS := sasa
-
 start-model-train-flow:
 	aws s3 mb s3://capstone --endpoint-url=http://localhost:4566 || true
 	aws s3 cp input_clean/credit_card_churn_clean.csv --endpoint-url=http://localhost:4566 s3://capstone/ID1/credit_card_churn_2022-08-07.csv
