@@ -1,7 +1,7 @@
 name: GitHub Actions Cloud Deployment
 on: [push]
 jobs:
-  Explore-GitHub-Actions:
+  Deploy-New-ML-Model:
     runs-on: ubuntu-latest
     steps:
       - name: Install SSH Key
@@ -19,13 +19,14 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
       
+      - name: Deploying with configurations
+        run: |
+          cat ${{ github.workspace }}/capstone-project/.env
+
       - run: ssh root@${{ secrets.SSH_HOST }} "cd mlops-training/capstone-project; git pull origin main"
       - run: ssh root@${{ secrets.SSH_HOST }} "cd mlops-training/capstone-project; make stop-serve"
       - run: ssh root@${{ secrets.SSH_HOST }} "cd mlops-training/capstone-project; make start-serve"
+
+      - run: echo "🍏 This job's status is ${{ job.status }}."
 

@@ -33,11 +33,11 @@ setup-model-serve:
 	docker compose --env-file=.env -f docker-compose-serve.yml  up --build --force-recreate
 
 stop-serve:	
-	docker rm -f serve
-	docker rm -f send_data
+	docker stop send_data
+	docker rm serve
 
 start-serve:
-	docker compose --env-file=.env -f docker-compose-serve.yml up -d
+	docker compose --env-file=.env -f docker-compose-serve.yml up serve -d
 
 
 

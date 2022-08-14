@@ -96,7 +96,6 @@ services:
     ports:
       - "9696:9696"
     environment:
-      RUN_ID: $RUN_ID
       EVIDENTLY_SERVICE: "http://evidently_service.:8085"
       MONGODB_ADDRESS: "mongodb://mongo.:27017/"
       MLFLOW_ADDRESS: "http://mlflow_server:5050"
