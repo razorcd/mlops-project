@@ -55,7 +55,7 @@ EVIDENTLY_SERVICE_ADDRESS = os.getenv('EVIDENTLY_SERVICE', 'http://127.0.0.1:808
 MONGODB_ADDRESS = os.getenv("MONGODB_ADDRESS", "mongodb://127.0.0.1:27018")
 MLFLOW_ADDRESS = os.getenv("MLFLOW_ADDRESS", "http://127.0.0.1:5051")
 # MLFLOW_ADDRESS = os.getenv("MLFLOW_ADDRESS", "http://mlflow_server:5050")
-RUN_ID = os.getenv('RUN_ID', '6502edde2c0c46a5b11cad8b7ea6377c')
+RUN_ID = os.getenv('RUN_ID', 'RUN_ID missing')
 
 mlflow.set_tracking_uri(MLFLOW_ADDRESS)
 mlflow.set_experiment("exp_flow_2")
