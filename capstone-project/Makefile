@@ -16,9 +16,9 @@ help:
 	
 init:
 	export CLOUD_ADDRESS=188.166.115.79
-	export MLFLOW_RUN_ID=b41f75075ba143cfb016f8441c96eba9
+	export RUN_ID="b41f75075ba143cfb016f8441c96eba9"
 	printenv | grep CLOUD_ADDRESS
-	printenv | grep MLFLOW_RUN_ID
+	printenv | grep RUN_ID
 # echo export CLOUD_ADDRESS=188.166.115.79 >>/etc/bash.bashrc
 
 setup-model-registry: init
