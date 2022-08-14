@@ -7,6 +7,7 @@ LOCAL_TAG:=$(shell date +"%Y-%m-%d-%H-%M")
 #   docker 
 #   docker-compose
 #   aws cli
+#   pip3b install prefect==2.0b5
 
 help:
 	@echo "\nTARGETS:\n"
@@ -27,7 +28,9 @@ start-model-train-flow:
         echo "Bucket 'capstone' exists.";\
 	fi
 	aws s3 cp input_clean/credit_card_churn_clean.csv --endpoint-url=http://localhost:4566 s3://capstone/ID1/credit_card_churn_2022-08-07.csv
-	prefect deployment create orchestration/model_train_flow.py
+	docker cp ./orchestration/model_train_flow.py prefect_agent_1:model_train_flow.py
+	docker exec prefect_agent_1 prefect deployment create model_train_flow.py
+	# prefect deployment create orchestration/model_train_flow.py
 
 setup-model-serve:
 	docker compose -f docker-compose-serve.yml  up --build --force-recreate -d
