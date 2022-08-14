@@ -14,7 +14,6 @@ data = table.to_pylist()
 # 'total_revolving_bal': 777, 'active_customer': True}
 
 for row in data:
-
     payload = {
       'customer_age': row['customer_age'],
       'gender': row['gender'],

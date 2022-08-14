@@ -59,3 +59,10 @@ Source: https://www.kaggle.com/datasets/anwarsan/credit-card-bank-churn
 - Measures % of deviated predictions based on month threshold.
 
 [model_train.ipynb](model_train.ipynb)
+
+
+
+
+## Other:
+
+- Github Acction: add ssh keys from server: https://zellwk.com/blog/github-actions-deploy/
