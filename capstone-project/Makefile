@@ -9,25 +9,25 @@ LOCAL_TAG:=$(shell date +"%Y-%m-%d-%H-%M")
 #   aws cli
 #   pip3b install prefect==2.0b5
 
-init: export CLOUD_ADDRESS = 188.166.115.79
-init: export RUN_ID = b41f75075ba143cfb016f8441c96eba9
+setup-model-serve: export CLOUD_ADDRESS = 188.166.115.79
+setup-model-serve: export RUN_ID = b41f75075ba143cfb016f8441c96eba9
 
 help:
 	@echo "\nTARGETS:\n"
 	@make -qpRr | egrep -e '^[a-z].*:' | sed -e 's~:~~g' | sort
 	@echo ""
 	
-init:
-	printenv | grep CLOUD_ADDRESS
-	printenv | grep RUN_ID
+# init:
+# printenv | grep CLOUD_ADDRESS
+# printenv | grep RUN_ID
 # echo export CLOUD_ADDRESS=188.166.115.79 >>/etc/bash.bashrc
 
-setup-model-registry: init
+setup-model-registry:
 	mkdir -p /tmp/mlopsdb
 	mkdir -p /tmp/mlopsartifacts  
 	mkdir -p /tmp/store   
 	mkdir -p /tmp/serve   
-	docker compose -f docker-compose-model-registry.yml up --build --force-recreate
+	docker compose --env-file=.env -f docker-compose-model-registry.yml up --build --force-recreate
 	
 start-model-train-flow:
 	aws s3 mb s3://capstone --endpoint-url=http://localhost:4566 || true
@@ -35,10 +35,10 @@ start-model-train-flow:
 	docker cp ./orchestration/model_train_flow.py prefect_agent_1:model_train_flow.py
 	docker exec prefect_agent_1 prefect deployment create model_train_flow.py
 
-setup-model-serve: init
+setup-model-serve:
 	chmod 777 monitoring/
 	chmod 777 monitoring/**/*
-	docker compose -f docker-compose-serve.yml  up --build --force-recreate
+	docker compose --env-file=.env -f docker-compose-serve.yml  up --build --force-recreate
 
 # start-serve-requests:
 # 	pipenv run python send_data.py &>/dev/null &   
