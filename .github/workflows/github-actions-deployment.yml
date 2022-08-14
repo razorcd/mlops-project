@@ -1,8 +1,5 @@
 name: GitHub Actions Cloud Deployment
-on:
-  push:
-    paths:
-      - 'capstone-project/**'
+on: [push]
 
 jobs:
   Deploy-New-ML-Model:
