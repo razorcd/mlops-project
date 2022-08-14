@@ -19,21 +19,18 @@ setup-model-registry:
 	mkdir -p /tmp/mlopsartifacts  
 	mkdir -p /tmp/store   
 	mkdir -p /tmp/serve   
-	docker compose -f docker-compose-model-registry.yml up --build --force-recreate -d
+	docker compose -f docker-compose-model-registry.yml up --build --force-recreate
 	
+BUCKET_EXISTS := sasa
 
 start-model-train-flow:
-	if [ aws s3 ls "s3://capstone" 2>&1 | grep -q 'NoSuchBucket' ]; then\
-		aws s3 mb --help s3://capstone --endpoint-url=http://localhost:4566; else\
-        echo "Bucket 'capstone' exists.";\
-	fi
+	aws s3 mb s3://capstone --endpoint-url=http://localhost:4566 || true
 	aws s3 cp input_clean/credit_card_churn_clean.csv --endpoint-url=http://localhost:4566 s3://capstone/ID1/credit_card_churn_2022-08-07.csv
 	docker cp ./orchestration/model_train_flow.py prefect_agent_1:model_train_flow.py
 	docker exec prefect_agent_1 prefect deployment create model_train_flow.py
-	# prefect deployment create orchestration/model_train_flow.py
 
 setup-model-serve:
-	docker compose -f docker-compose-serve.yml  up --build --force-recreate -d
+	docker compose -f docker-compose-serve.yml  up --build --force-recreate
 
 # start-serve-requests:
 # 	pipenv run python send_data.py &>/dev/null &   
