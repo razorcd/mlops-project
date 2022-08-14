@@ -26,11 +26,16 @@ Source: https://www.kaggle.com/datasets/anwarsan/credit-card-bank-churn
 - [ ] ML-serve Stream server (optional)
 - [ ] tests
 - [ ] linters
-- [ ] Makefile and CI
+- [x] Makefile and CI/CD
 - [x] deploy to cloud
 - [x] logging and monitoring
 - [x] batch reporting
 - [x] docker and docker-compose everything
+- [ ] server to download reporting
+
+
+Reminders:
+- [ ] deploy on filechange only. Maybe with tag.
 
 ## Data cleanup
 
