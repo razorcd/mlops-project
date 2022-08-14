@@ -40,6 +40,14 @@ setup-model-serve:
 	chmod 777 monitoring/**/*
 	docker compose --env-file=.env -f docker-compose-serve.yml  up --build --force-recreate
 
+stop-serve:	
+	docker rm -f serve
+	docker rm -f send_data
+
+start-serve:
+	docker compose -f docker-compose-serve.yml up
+
+
 # start-serve-requests:
 # 	pipenv run python send_data.py &>/dev/null &   
 

@@ -27,6 +27,7 @@ Source: https://www.kaggle.com/datasets/anwarsan/credit-card-bank-churn
 - [ ] tests
 - [ ] linters
 - [ ] Makefile and CI
+- [x] deploy to cloud
 - [x] logging and monitoring
 - [x] batch reporting
 - [x] docker and docker-compose everything
