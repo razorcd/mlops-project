@@ -22,8 +22,11 @@ setup-model-registry:
 	
 
 start-model-train-flow:
-	aws s3 mb s3://capstone --endpoint-url=http://localhost:4566  
-	aws s3 cp ../input_clean/credit_card_churn_clean.csv --endpoint-url=http://localhost:4566 s3://capstone/ID1/credit_card_churn_2022-08-07.csv
+	if aws s3 ls "s3://capstone" 2>&1 | grep -q 'NoSuchBucket'
+	then aws s3 mb --help s3://capstone --endpoint-url=http://localhost:4566                              
+	else echo "Bucket 'capstone' exists."                                  
+	fi
+	aws s3 cp input_clean/credit_card_churn_clean.csv --endpoint-url=http://localhost:4566 s3://capstone/ID1/credit_card_churn_2022-08-07.csv
 	prefect deployment create model_train_flow.py
 
 setup-model-serve:

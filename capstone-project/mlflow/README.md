@@ -58,6 +58,15 @@ prefect agent start work_queue_1
 
 
 ### AWS S3 setup:
+- aws cli credentials setup:
+```
+$ aws configure
+AWS Access Key ID [****************ID1]: ID1
+AWS Secret Access Key [None]: None
+Default region name [eu-west-1]: eu-west-1
+Default output format [None]: 
+```
+
 - create S3 bucket:
 ```
 aws s3 mb s3://capstone --endpoint-url=http://localhost:4566
