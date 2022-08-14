@@ -34,7 +34,8 @@ setup-model-serve:
 
 stop-serve:	
 	docker stop send_data
-	docker rm serve
+	docker stop serve
+	docker rm -f serve
 
 start-serve:
 	docker compose --env-file=.env -f docker-compose-serve.yml up serve -d
