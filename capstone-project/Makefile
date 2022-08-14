@@ -38,7 +38,7 @@ stop-serve:
 	docker rm -f serve
 
 start-serve:
-	docker compose --env-file=.env -f docker-compose-serve.yml up serve -d
+	docker compose --env-file=.env -f docker-compose-serve.yml up -d
 
 
 
