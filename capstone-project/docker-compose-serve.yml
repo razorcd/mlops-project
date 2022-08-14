@@ -120,7 +120,7 @@ services:
     image: "send_data"
     container_name: "send_data"
     environment:
-      RUN_ID: $RUN_ID
-      SERVE_ADDRESS: http://$CLOUD_ADDRESS:9696/predict
+      RUN_ID: ${RUN_ID}
+      SERVE_ADDRESS: http://${CLOUD_ADDRESS}:9696/predict
     networks:
       - external
