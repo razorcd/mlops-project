@@ -116,7 +116,7 @@ services:
       - serve
     build:
       context: .
-      dockerfile: Dockerfile-prefect-agent
+      dockerfile: Dockerfile-send-data
     image: "send_data"
     container_name: "send_data"
     env_file:
