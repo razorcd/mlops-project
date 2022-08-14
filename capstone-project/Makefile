@@ -15,8 +15,8 @@ help:
 	@echo ""
 	
 init:
-	export CLOUD_ADDRESS=188.166.115.79
-	export RUN_ID="b41f75075ba143cfb016f8441c96eba9"
+	export CLOUD_ADDRESS=188.166.115.79 && \
+	export RUN_ID=b41f75075ba143cfb016f8441c96eba9
 	printenv | grep CLOUD_ADDRESS
 	printenv | grep RUN_ID
 # echo export CLOUD_ADDRESS=188.166.115.79 >>/etc/bash.bashrc
