@@ -1,5 +1,10 @@
 name: GitHub Actions Cloud Deployment
-on: [push]
+on:
+  push:
+    branches:
+    - main
+    paths:
+    - capstone-project
 jobs:
   Deploy-New-ML-Model:
     runs-on: ubuntu-latest

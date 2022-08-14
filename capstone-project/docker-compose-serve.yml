@@ -95,6 +95,8 @@ services:
     container_name: "serve"
     ports:
       - "9696:9696"
+    env_file:
+      - .env
     environment:
       EVIDENTLY_SERVICE: "http://evidently_service.:8085"
       MONGODB_ADDRESS: "mongodb://mongo.:27017/"
