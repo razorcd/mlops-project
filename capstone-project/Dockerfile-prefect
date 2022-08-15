@@ -1,18 +1,11 @@
 FROM python:3.8
 
-# COPY requirements.txt .
-# RUN pip install -r requirements.txt
-
 RUN pip install --no-cache-dir prefect==2.0b5
-
-RUN prefect config set PREFECT_ORION_UI_API_URL="http://188.166.115.79:4200/api"
-
-RUN prefect config view
 
 RUN mkdir /tmp/store
 
 EXPOSE 4200
 EXPOSE 8080
 
-CMD ["prefect", "orion", "start", "--host", "0.0.0.0"]
+CMD printenv && prefect config set PREFECT_ORION_UI_API_URL="http://$CLOUD_ADDRESS:4200/api" && prefect orion start --host 0.0.0.0
 

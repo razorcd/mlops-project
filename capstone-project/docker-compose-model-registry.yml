@@ -1,6 +1,5 @@
-version: '3.3'
+version: '3.7'
 services:
-    # docker run --rm --name mlflow5 -v /tmp/mlopsdb:/tmp/mlopsdb -v /tmp/mlopsartifacts:/tmp/mlopsartifacts -p 5051:5050 mlflow_4
     mlflow_server:
       restart: always
       build:
@@ -14,14 +13,12 @@ services:
         - 5051:5050
       networks:
         - backend
-      # create these folders locally:
       volumes:
         - /tmp/mlopsdb:/tmp/mlopsdb
         - /tmp/mlopsartifacts:/tmp/mlopsartifacts
         - /tmp/store:/tmp/store
 
     prefect_server:
-      # docker run --rm --name prefectTest3 -p 4200:4200 -p 8080:8080 prefect_test3 
       restart: always
       build:
         context: .
@@ -33,6 +30,8 @@ services:
       ports:
         - "4200:4200"
         - "8080:8080"
+      env_file:
+        - .env.local
       networks:
         - backend  
       volumes:
@@ -58,9 +57,23 @@ services:
         - /tmp/mlopsdb:/tmp/mlopsdb
         - /tmp/mlopsartifacts:/tmp/mlopsartifacts
         - /tmp/store:/tmp/store
+        - /tmp/mlreports:/tmp/mlreports
       networks:
         - backend  
 
+    reports_nginx_server:
+      build:
+        context: monitoring/nginx
+        dockerfile: Dockerfile  
+      depends_on:
+        - prefect_server
+      volumes:
+        - /tmp/mlreports:/tmp/mlreports
+      ports:
+        - "8888:8888"
+      networks:
+        - backend
+        
     localstack:
       container_name: "localstack_main"
       image: localstack/localstack

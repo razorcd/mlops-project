@@ -13,13 +13,26 @@ help:
 	@echo "\nTARGETS:\n"
 	@make -qpRr | egrep -e '^[a-z].*:' | sed -e 's~:~~g' | sort
 	@echo ""
-	
+
+reset_all:
+	# docker compose -f docker-compose-serve.yml down
+	docker compose -f docker-compose-model-registry.yml down
+	rm -rf /tmp/mlopsdb
+	rm -rf /tmp/mlopsartifacts  
+	rm -rf /tmp/store   
+	rm -rf /tmp/serve   
+	rm -rf /tmp/mlreports
+	rm .env
+
+# make setup-model-registry env=local
 setup-model-registry:
 	mkdir -p /tmp/mlopsdb
 	mkdir -p /tmp/mlopsartifacts  
 	mkdir -p /tmp/store   
 	mkdir -p /tmp/serve   
-	docker compose --env-file=.env -f docker-compose-model-registry.yml up --build --force-recreate
+	mkdir -p /tmp/mlreports
+	cp .env.$(env) .env
+	docker compose -f docker-compose-model-registry.yml up --build --force-recreate
 	
 start-model-train-flow:
 	aws s3 mb s3://capstone --endpoint-url=http://localhost:4566 || true
@@ -27,18 +40,22 @@ start-model-train-flow:
 	docker cp ./orchestration/model_train_flow.py prefect_agent_1:model_train_flow.py
 	docker exec prefect_agent_1 prefect deployment create model_train_flow.py
 
+# make setup-model-serve env=local
 setup-model-serve:
 	chmod 777 monitoring/
 	chmod 777 monitoring/**/*
-	docker compose --env-file=.env -f docker-compose-serve.yml  up --build --force-recreate
+	cp .env.$(env) .env
+	docker compose -f docker-compose-serve.yml  up --build --force-recreate
 
 stop-serve:	
 	docker stop send_data
 	docker stop serve
 	docker rm -f serve
 
+# make start-serve env=local
 start-serve:
-	docker compose --env-file=.env -f docker-compose-serve.yml up -d
+	cp .env.$(env) .env
+	docker compose -f docker-compose-serve.yml up -d
 
 
 

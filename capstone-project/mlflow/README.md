@@ -89,6 +89,8 @@ aws s3 cp ../input_clean/credit_card_churn_clean.csv --endpoint-url=http://local
 
 # Quick setup
 
+There are 2 environemnts: `local` and `cloud`, defined by .env.* files. This is required to specify when using `make`.
+
 Model registry pipeline:
 ```
 mkdir /tmp/mlopsdb
