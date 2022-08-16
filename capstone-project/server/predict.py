@@ -7,6 +7,7 @@ import os
 import logging
 import pickle
 import pandas as pd
+from datetime import datetime
 
 import mlflow
 from pandas import DataFrame
@@ -52,13 +53,14 @@ class ModelService():
 
 
 EVIDENTLY_SERVICE_ADDRESS = os.getenv('EVIDENTLY_SERVICE', 'http://127.0.0.1:8085')
-MONGODB_ADDRESS = os.getenv("MONGODB_ADDRESS", "mongodb://127.0.0.1:27018")
+MONGODB_ADDRESS = os.getenv("MONGODB_ADDRESS", "mongodb://188.166.115.79:27018")
 MLFLOW_ADDRESS = os.getenv("MLFLOW_ADDRESS", "http://127.0.0.1:5051")
 # MLFLOW_ADDRESS = os.getenv("MLFLOW_ADDRESS", "http://mlflow_server:5050")
 RUN_ID = os.getenv('RUN_ID', 'RUN_ID missing')
+MLFLOW_EXPERIMENT = os.getenv('MLFLOW_EXPERIMENT', 'exp_flow_2')
 
 mlflow.set_tracking_uri(MLFLOW_ADDRESS)
-mlflow.set_experiment("exp_flow_2")
+mlflow.set_experiment(MLFLOW_EXPERIMENT)
 
 app = Flask('duration-prediction')
 # log = app.logger
@@ -72,7 +74,7 @@ client = MlflowClient()
 
 # mlflow_model_path = f'models:/best_model-exp_flow_2/Staging'
 mlflow_model_path = f'runs:/{RUN_ID}/model'
-# mlflow_dv_path = f'mlflow-artifacts:/best_model-exp   _flow_2/Staging'
+# mlflow_dv_path = f'mlflow-artifacts:/best_model-exp_flow_2/Staging'
 
 if not os.path.exists('/tmp/serve'): os.mkdir('/tmp/serve')
 model = mlflow.xgboost.load_model(mlflow_model_path)
@@ -88,6 +90,21 @@ db = mongo_client.get_database("prediction_service")
 collection = db.get_collection("data")
 
 
+
+# GET payload example:
+    # {
+    #   'customer_age': 100,
+    #   'gender': 'F',
+    #   'dependent_count': 2,
+    #   'education_level': 2,
+    #   'marital_status': 'married',
+    #   'income_category': 2,
+    #   'card_category': 'blue',
+    #   'months_on_book': 6,
+    #   'total_relationship_count': 3,
+    #   'credit_limit': 4000,
+    #   'total_revolving_bal': 2500,
+    # }
 @app.route('/predict', methods=['POST'])
 def predict_endpoint():
     log.info(f'Request payload: {request.get_data()}')
@@ -113,6 +130,8 @@ def predict_endpoint():
 def save_to_db(record, prediction):
     rec = record.copy()
     rec['prediction'] = prediction
+    rec['created_at'] = datetime.now()
+    rec['model_run_id'] = RUN_ID
     collection.insert_one(rec)
 
 
@@ -127,20 +146,3 @@ if __name__ == "__main__":
     log.info('App starting ...')
     app.run(debug=True, host='0.0.0.0', port=9696)
     
-
-
-
-# GET payload:
-    # {
-    #   'customer_age': 100,
-    #   'gender': 'F',
-    #   'dependent_count': 2,
-    #   'education_level': 2,
-    #   'marital_status': 'married',
-    #   'income_category': 2,
-    #   'card_category': 'blue',
-    #   'months_on_book': 6,
-    #   'total_relationship_count': 3,
-    #   'credit_limit': 4000,
-    #   'total_revolving_bal': 2500,
-    # }
