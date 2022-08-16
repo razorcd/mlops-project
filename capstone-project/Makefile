@@ -34,11 +34,16 @@ setup-model-registry:
 	cp .env.$(env) .env
 	docker compose -f docker-compose-model-registry.yml up --build --force-recreate
 	
-start-model-train-flow:
+apply-model-train-flow:
 	aws s3 mb s3://capstone --endpoint-url=http://localhost:4566 || true
 	aws s3 cp input_clean/credit_card_churn_clean.csv --endpoint-url=http://localhost:4566 s3://capstone/ID1/credit_card_churn_2022-08-07.csv
 	docker cp ./orchestration/model_train_flow.py prefect_agent_1:model_train_flow.py
 	docker exec prefect_agent_1 prefect deployment create model_train_flow.py
+
+apply-prediction-reporting:
+	docker cp ./monitoring/create_report.py prefect_agent_1:create_report.py
+	docker exec prefect_agent_1 prefect deployment create create_report.py
+
 
 # make setup-model-serve env=local
 setup-model-serve:

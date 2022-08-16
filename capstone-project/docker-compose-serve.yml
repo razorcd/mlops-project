@@ -99,7 +99,7 @@ services:
       - .env
     environment:
       EVIDENTLY_SERVICE: "http://evidently_service.:8085"
-      MONGODB_ADDRESS: "mongodb://mongo.:27017/"
+      MONGODB_ADDRESS: "mongodb://mongo:27017/"
       MLFLOW_ADDRESS: "http://mlflow_server:5050"
     volumes:
       - /tmp/mlopsdb:/tmp/mlopsdb
@@ -108,6 +108,7 @@ services:
       - /tmp/serve:/tmp/serve
     networks:
       - backend  
+      - external
 
 
   send_data:
@@ -120,6 +121,8 @@ services:
       dockerfile: Dockerfile-send-data
     image: "send_data"
     container_name: "send_data"
+    environment:
+      SERVE_ADDRESS: "http://serve:9696"
     env_file:
       - .env
     networks:

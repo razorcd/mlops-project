@@ -31,7 +31,7 @@ services:
         - "4200:4200"
         - "8080:8080"
       env_file:
-        - .env.local
+        - .env
       networks:
         - backend  
       volumes:
@@ -51,8 +51,10 @@ services:
         dockerfile: Dockerfile-prefect-agent
       image: "prefect_agent_1"
       container_name: "prefect_agent_1"
-      # command: bash -c "sleep 9999999"
-      # command: bash -c "prefect agent local start --name $$(uuid) --no-hostname-label --label development"
+      environment:
+        REPORT_TIME_WINDOW_MINUTES: 180
+        REPORTS_FOLDER: /tmp/mlreports
+        MONGODB_ADDRESS: mongodb://mongo.:27017/
       volumes:
         - /tmp/mlopsdb:/tmp/mlopsdb
         - /tmp/mlopsartifacts:/tmp/mlopsartifacts
