@@ -64,6 +64,8 @@ services:
         - backend  
 
     reports_nginx_server:
+      container_name: "reports_nginx_server"
+      image: "reports_nginx_server"
       build:
         context: monitoring/nginx
         dockerfile: Dockerfile  

@@ -40,10 +40,6 @@ apply-model-train-flow:
 	docker cp ./orchestration/model_train_flow.py prefect_agent_1:model_train_flow.py
 	docker exec prefect_agent_1 prefect deployment create model_train_flow.py
 
-apply-prediction-reporting:
-	docker cp ./monitoring/create_report.py prefect_agent_1:create_report.py
-	docker exec prefect_agent_1 prefect deployment create create_report.py
-
 
 # make setup-model-serve env=local
 setup-model-serve:
@@ -51,6 +47,11 @@ setup-model-serve:
 	chmod 777 monitoring/**/*
 	cp .env.$(env) .env
 	docker compose -f docker-compose-serve.yml  up --build --force-recreate
+
+apply-prediction-reporting:
+	docker cp ./monitoring/create_report.py prefect_agent_1:create_report.py
+	docker exec prefect_agent_1 prefect deployment create create_report.py
+
 
 stop-serve:	
 	docker stop send_data

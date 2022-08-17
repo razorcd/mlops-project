@@ -13,6 +13,8 @@ networks:
 
 services:
   evidently_service:
+    container_name: evidently_service
+    image: evidently_service
     build:
       context: monitoring/evidently_service
       dockerfile: Dockerfile  
@@ -30,6 +32,7 @@ services:
       - backend
 
   prometheus:
+    container_name: prometheus
     image: prom/prometheus
     security_opt:
       - seccomp:unconfined
@@ -47,6 +50,7 @@ services:
     restart: always
 
   grafana:
+    container_name: grafana
     image: grafana/grafana
     user: "472"
     depends_on:
@@ -66,6 +70,7 @@ services:
     restart: always
     
   mongo:
+    container_name: mongo
     image: mongo
     ports:
       - "27018:27017"
@@ -79,6 +84,8 @@ services:
 
 
   serve:
+    container_name: serve
+    image: serve
     build: .
     restart: always
     depends_on:
@@ -91,8 +98,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-serve
-    image: "serve"
-    container_name: "serve"
     ports:
       - "9696:9696"
     env_file:
@@ -112,6 +117,8 @@ services:
 
 
   send_data:
+    container_name: send_data
+    image: send_data
     build: .
     restart: always
     depends_on:

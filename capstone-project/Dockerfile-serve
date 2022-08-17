@@ -4,6 +4,8 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY server/predict.py .
+COPY server/model_service.py .
+COPY server/model_loader.py .
 
 EXPOSE 9696
 
