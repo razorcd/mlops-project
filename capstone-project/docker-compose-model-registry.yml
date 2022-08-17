@@ -79,9 +79,9 @@ services:
         - backend
         
     localstack:
-      container_name: "localstack_main"
+      container_name: localstack_main
       image: localstack/localstack
-      hostname: s3
+      hostname: aws
       ports:
         - "4566:4566"            # LocalStack Gateway
         - "4510-4559:4510-4559"  # external services port range
@@ -89,10 +89,10 @@ services:
         # - "53:53/udp"            # DNS config (only required for Pro)
         # - "443:443"              # LocalStack HTTPS Gateway (only required for Pro)
       environment:
-        - SERVICES=s3
+        - SERVICES=s3,kinesis
         - AWS_DEFAULT_REGION=eu-west-1
         - AWS_ACCESS_KEY_ID=ID1
-        - LOCALSTACK_HOSTNAME=s3
+        - LOCALSTACK_HOSTNAME=aws
         # - AWS_SECRET_ACCESS_KEY=KEY1
         # - DEBUG=${DEBUG-}
         # - PERSISTENCE=${PERSISTENCE-}

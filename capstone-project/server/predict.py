@@ -21,7 +21,7 @@ EVIDENTLY_SERVICE_ADDRESS = os.getenv('EVIDENTLY_SERVICE', 'http://127.0.0.1:808
 MONGODB_ADDRESS = os.getenv("MONGODB_ADDRESS", "mongodb://127.0.0.1:27018")
 MONGODB_DB = os.getenv("MONGODB_DB", "prediction_service")
 MONGODB_COLLECTION = os.getenv("MONGODB_COLLECTION", "data")
-RUN_ID = os.getenv('RUN_ID', '98c8ee60ed7e40a1bb61836053d10f9a')
+RUN_ID = os.getenv('RUN_ID', 'No RUN_ID provided')
 
 log = logging.getLogger('gunicorn.error')
 
@@ -40,17 +40,17 @@ app.logger.handlers = log.handlers
 
 # GET payload example:
     # {
-    #   'customer_age': 100,
-    #   'gender': 'F',
-    #   'dependent_count': 2,
-    #   'education_level': 2,
-    #   'marital_status': 'married',
-    #   'income_category': 2,
-    #   'card_category': 'blue',
-    #   'months_on_book': 6,
-    #   'total_relationship_count': 3,
-    #   'credit_limit': 4000,
-    #   'total_revolving_bal': 2500,
+    #   "customer_age": 100,
+    #   "gender": "F"",
+    #   "dependent_count": 2,
+    #   "education_level": 2,
+    #   "marital_status": "married",
+    #   "income_category": 2,
+    #   "card_category": "blue",
+    #   "months_on_book": 6,
+    #   "total_relationship_count": 3,
+    #   "credit_limit": 4000,
+    #   "total_revolving_bal": 2500
     # }
 @app.route('/predict', methods=['POST'])
 def predict_endpoint():

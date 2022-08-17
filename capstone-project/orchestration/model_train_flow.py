@@ -26,7 +26,7 @@ log = None
 s3_storage_options = {
         'key': 'ID1',
         'secret' : 'None',
-        'client_kwargs': {'endpoint_url': 'http://s3:4566', 'region_name': 'eu-west-1'}
+        'client_kwargs': {'endpoint_url': 'http://aws:4566', 'region_name': 'eu-west-1'}
     }
 
 @task
