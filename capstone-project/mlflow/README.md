@@ -123,3 +123,20 @@ curl -X POST -H 'Content-Type: application/json' localhost:9696/predict -d '{"cu
 ```
 pipenv run pip freeze > requirements.txt
 ```
+
+
+### Publish to Kinesis
+```
+aws kinesis put-record \
+    --stream-name predictions --endpoint-url=http://localhost:4566 \
+    --partition-key 1 \
+    --data "ewogICAgICAiY3VzdG9tZXJfYWdlIjogMTAwLAogICAgICAiZ2VuZGVyIjogIkYiLAogICAgICAiZGVwZW5kZW50X2NvdW50IjogMiwKICAgICAgImVkdWNhdGlvbl9sZXZlbCI6IDIsCiAgICAgICJtYXJpdGFsX3N0YXR1cyI6ICJtYXJyaWVkIiwKICAgICAgImluY29tZV9jYXRlZ29yeSI6IDIsCiAgICAgICJjYXJkX2NhdGVnb3J5IjogImJsdWUiLAogICAgICAibW9udGhzX29uX2Jvb2siOiA2LAogICAgICAidG90YWxfcmVsYXRpb25zaGlwX2NvdW50IjogMywKICAgICAgImNyZWRpdF9saW1pdCI6IDQwMDAsCiAgICAgICJ0b3RhbF9yZXZvbHZpbmdfYmFsIjogMjUwMAogICAgfQ=="
+```    
+
+### Consume from Kinesis
+```
+aws kinesis get-shard-iterator  --shard-id shardId-000000000000 --endpoint-url=http://localhost:4566 --shard-iterator-type TRIM_HORIZON --stream-name results --query 'ShardIterator'
+# copy shard itterator without quotes
+aws kinesis get-records --endpoint-url=http://localhost:4566 --shard-iterator {SHARD_ITERATOR_HERE}
+# decode Data based64
+```

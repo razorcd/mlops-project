@@ -8,6 +8,7 @@ from model_loader import ModelLoader
 from model_service import ModelService
 
 PREDICTIONS_STREAM_NAME = os.getenv('PREDICTIONS_STREAM_NAME', 'predictions')
+RESULTS_STREAM_NAME = os.getenv('RESULTS_STREAM_NAME', 'results')
 RUN_ID = os.getenv('RUN_ID', "c68164ce869e4c90a7c93752436e9bc7")
 
 model, dv = ModelLoader().load_model_from_mlflow(RUN_ID)
@@ -28,6 +29,12 @@ my_shard_iterator = shard_iterator['ShardIterator']
 record_response = kinesis_client.get_records(ShardIterator=my_shard_iterator, Limit=2)
 
 
+def publish_result(partition_key, result):
+    kinesis_client.put_record(
+        StreamName=RESULTS_STREAM_NAME,
+        Data=json.dumps(result),
+        PartitionKey=str(partition_key)
+    )
 
 # aws kinesis put-record \          
 #     --stream-name predictions --endpoint-url=http://localhost:4566 \
@@ -41,7 +48,6 @@ while 'NextShardIterator' in record_response:
         print(record['Data'])
         input = json.loads(record['Data'])
 
-
         features = model_service.prepare_features(input)
         pred = model_service.predict(features)
 
@@ -49,14 +55,8 @@ while 'NextShardIterator' in record_response:
             'churn chance': float(str(pred)),
             'model_run_id': RUN_ID
         }
-
         print(result)
+        publish_result("partition1", result)
 
     sleep(5)
 
-
-# kinesis_client.put_record(
-#     StreamName=PREDICTIONS_STREAM_NAME,
-#     Data=json.dumps(prediction_event),
-#     PartitionKey=str(ride_id)
-# )

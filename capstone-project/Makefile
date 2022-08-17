@@ -37,6 +37,10 @@ setup-model-registry:
 apply-model-train-flow:
 	aws s3 mb s3://capstone --endpoint-url=http://localhost:4566 || true
 	aws s3 cp input_clean/credit_card_churn_clean.csv --endpoint-url=http://localhost:4566 s3://capstone/ID1/credit_card_churn_2022-08-07.csv
+
+	aws kinesis create-stream --endpoint-url=http://localhost:4566 --stream-name predictions --shard-count 1
+	aws kinesis create-stream --endpoint-url=http://localhost:4566 --stream-name results --shard-count 1
+
 	docker cp ./orchestration/model_train_flow.py prefect_agent_1:model_train_flow.py
 	docker exec prefect_agent_1 prefect deployment create model_train_flow.py
 
