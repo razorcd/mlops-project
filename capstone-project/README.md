@@ -23,7 +23,7 @@ Source: https://www.kaggle.com/datasets/anwarsan/credit-card-bank-churn
 - [x] ml pipeline for hiperparameter tuning
 - [x] model registry
 - [x] ML-serve API server
-- [ ] ML-serve Stream server (optional)
+- [x] ML-serve Stream server (optional)
 - [ ] tests
 - [ ] linters
 - [x] Makefile and CI/CD
@@ -31,10 +31,10 @@ Source: https://www.kaggle.com/datasets/anwarsan/credit-card-bank-churn
 - [x] logging and monitoring
 - [x] batch reporting
 - [x] docker and docker-compose everything
-- [ ] server to download reporting
+- [x] server to download reporting
 
 
-Reminders:
+To do reminders:
 - [ ] deploy on filechange only. Maybe with tag.
 
 ## Data cleanup
