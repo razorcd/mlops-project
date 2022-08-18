@@ -83,9 +83,9 @@ services:
       - backend
 
 
-  serve:
-    container_name: serve
-    image: serve
+  serve-api:
+    container_name: serve-api
+    image: serve-api
     build: .
     restart: always
     depends_on:
@@ -115,22 +115,70 @@ services:
       - backend  
       - external
 
-
-  send_data:
-    container_name: send_data
-    image: send_data
+  serve-kinesis:
+    container_name: serve-kinesis
+    image: serve-kinesis
     build: .
     restart: always
     depends_on:
-      - serve
+      - prefect_server
+      - localstack
+      - mlflow_server
+      - agent
+      - evidently_service
+      - mongo
     build:
       context: .
-      dockerfile: Dockerfile-send-data
-    image: "send_data"
-    container_name: "send_data"
+      dockerfile: Dockerfile-serve-kinesis
+    env_file:
+      - .env
     environment:
-      SERVE_ADDRESS: "http://serve:9696"
+      MLFLOW_ADDRESS: "http://mlflow_server:5050"
+      KINESIS_ADDRESS: "http://aws:4566"
+    volumes:
+      - /tmp/mlopsdb:/tmp/mlopsdb
+      - /tmp/mlopsartifacts:/tmp/mlopsartifacts
+      - /tmp/store:/tmp/store
+      - /tmp/serve:/tmp/serve
+    networks:
+      - backend  
+      - external
+
+  send_data-api:
+    container_name: send_data-api
+    image: send_data-api
+    build: .
+    restart: always
+    depends_on:
+      - serve-api
+    build:
+      context: .
+      dockerfile: Dockerfile-send-data-api
+    image: "send_data-api"
+    container_name: "send_data-api"
+    environment:
+      SERVE_ADDRESS: "http://serve-api:9696"
     env_file:
       - .env
     networks:
       - external
+
+
+  # send_data-kinesis:
+  #   container_name: send_data-kinesis
+  #   image: send_data-kinesis
+  #   build: .
+  #   restart: always
+  #   depends_on:
+  #     - serve-kinesis
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile-send-data-kinesis
+  #   image: "send_data-kinesis"
+  #   container_name: "send_data-kinesis"
+  #   environment:
+  #     SERVE_ADDRESS: "http://serve-api:9696"
+  #   env_file:
+  #     - .env
+  #   networks:
+  #     - external      

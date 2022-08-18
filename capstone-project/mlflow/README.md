@@ -124,6 +124,13 @@ curl -X POST -H 'Content-Type: application/json' localhost:9696/predict -d '{"cu
 pipenv run pip freeze > requirements.txt
 ```
 
+### Open UIs
+- `http://{host_here}:5051/#/experiments/0`
+- `http://{host_here}:4200/`
+- `http://{host_here}:8085/metrics`
+- `http://{host_here}:9091/graph?g0.expr=evidently%3Adata_drift%3Ap_value&g0.tab=1&g0.stacked=0&g0.show_exemplars=0&g0.range_input=1h`
+- `http://{host_here}:3000/d/U54hsxv7k/evidently-data-drift-dashboard?orgId=1&refresh=10s&from=now-6h&to=now`
+
 
 ### Publish to Kinesis
 ```

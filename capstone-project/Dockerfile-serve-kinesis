@@ -1,0 +1,16 @@
+FROM python:3.8
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+RUN unzip awscliv2.zip
+RUN sh ./aws/install
+
+COPY server/serve_kinesis.py .
+COPY server/model_service.py .
+COPY server/model_loader.py .
+
+COPY server/setup_aws_credentials.sh .
+
+CMD sh setup_aws_credentials.sh && python serve_kinesis.py

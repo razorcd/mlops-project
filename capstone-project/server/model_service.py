@@ -26,7 +26,7 @@ class ModelService():
     def predict(_self, dicts):
         X = _self.dv.transform(dicts)
         features = _self.dv.get_feature_names_out()
-        print(f'features={features}')
+        # print(f'features={features}')
         dval = xgb.DMatrix(X, feature_names=features)
         y_pred = _self.model.predict(dval)
         return y_pred[0]
