@@ -14,6 +14,9 @@ help:
 	@make -qpRr | egrep -e '^[a-z].*:' | sed -e 's~:~~g' | sort
 	@echo ""
 
+run_tests:
+	pipenv run pytest server/tests	
+
 reset_all:
 	# docker compose -f docker-compose-serve.yml down
 	docker compose -f docker-compose-model-registry.yml down

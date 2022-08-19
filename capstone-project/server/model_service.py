@@ -30,3 +30,4 @@ class ModelService():
         dval = xgb.DMatrix(X, feature_names=features)
         y_pred = _self.model.predict(dval)
         return y_pred[0]
+        
