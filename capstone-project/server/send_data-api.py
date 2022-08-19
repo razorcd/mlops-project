@@ -37,4 +37,4 @@ while True:
                               data=json.dumps(row)) \
                       .json()
       print(f"Response: {resp}\n")
-      sleep(1) #sec
+      sleep(60) #sec

@@ -82,7 +82,6 @@ services:
     networks:
       - backend
 
-
   serve-api:
     container_name: serve-api
     image: serve-api
@@ -97,7 +96,7 @@ services:
       - mongo
     build:
       context: .
-      dockerfile: Dockerfile-serve
+      dockerfile: Dockerfile-serve-api
     ports:
       - "9696:9696"
     env_file:
@@ -133,8 +132,9 @@ services:
     env_file:
       - .env
     environment:
-      MLFLOW_ADDRESS: "http://mlflow_server:5050"
+      MLFLOW_ADDRESS: http://mlflow_server:5050
       KINESIS_ADDRESS: "http://aws:4566"
+      RESULTS_STREAM_NAME: results
     volumes:
       - /tmp/mlopsdb:/tmp/mlopsdb
       - /tmp/mlopsartifacts:/tmp/mlopsartifacts
@@ -157,28 +157,28 @@ services:
     image: "send_data-api"
     container_name: "send_data-api"
     environment:
-      SERVE_ADDRESS: "http://serve-api:9696"
+      SERVE_ADDRESS: http://serve-api:9696
     env_file:
       - .env
     networks:
       - external
 
 
-  # send_data-kinesis:
-  #   container_name: send_data-kinesis
-  #   image: send_data-kinesis
-  #   build: .
-  #   restart: always
-  #   depends_on:
-  #     - serve-kinesis
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile-send-data-kinesis
-  #   image: "send_data-kinesis"
-  #   container_name: "send_data-kinesis"
-  #   environment:
-  #     SERVE_ADDRESS: "http://serve-api:9696"
-  #   env_file:
-  #     - .env
-  #   networks:
-  #     - external      
+  send_data-kinesis:
+    container_name: send_data-kinesis
+    image: send_data-kinesis
+    build: .
+    restart: always
+    depends_on:
+      - serve-kinesis
+    build:
+      context: .
+      dockerfile: Dockerfile-send-data-kinesis
+    image: "send_data-kinesis"
+    container_name: "send_data-kinesis"
+    environment:
+      KINESIS_ADDRESS: http://aws:4566
+    env_file:
+      - .env
+    networks:
+      - external      

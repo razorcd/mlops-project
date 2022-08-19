@@ -3,8 +3,7 @@ FROM python:3.8
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY server/send_data.py .
+COPY server/send_data-api.py .
 COPY input_clean/ input_clean/
-# ENV SERVE_ADDRESS=None
 
-CMD python send_data.py
+CMD python send_data-api.py
