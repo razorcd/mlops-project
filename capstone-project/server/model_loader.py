@@ -1,6 +1,5 @@
 import os
 
-from model_service import ModelService
 from mlflow.tracking import MlflowClient
 import mlflow
 import pickle

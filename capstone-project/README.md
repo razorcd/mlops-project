@@ -175,14 +175,55 @@ The entire infrastructure was deployed in the cloud using virtual machine provid
 
 
 
-# Start infrastructure locally
+# Start infrastructure locally or cloud
+To deploy in the cloud, the steps are similar except: use you cloud VM domain instead of localhost to access the UIs and replace `env=local` with `env=cloud`
+
 - install `docker`, `docker compose`, `make`
 - run `make reset_all` to ensure any existing containers are removed
+
 - run `make setup-model-registry env=local`  to start model training infrastructure
 - open `http://localhost:5051` to see MLFlow UI.
 - run `make init_aws  to setup and initialize` to setup training data and streams in AWS
 - run `make apply-model-train-flow` to apply model training script to the orchestrator. This will run trainings regularly.
 - open `http://localhost:4200/#deployments`, it will show the `model_tuning_and_uploading` deployment scheduled. Start a `Quick Run` to not wait for the scheduler. This will run the model training pipeline and upload a bunch of models to MLFlow server and register the best model.
+
+- from the MLFlow UI decide which model you want to deploy. Get the Run Id of the model and update `RUN_ID` in `.env.local` file (or `.env.cloud` for cloud deployment)
+- run `make setup-model-serve env=local` to start prediction servers
+
+- request a prediction using http API:
+``` sh
+$> curl -X POST -H 'Content-Type: application/json' http://127.0.0.1:9696/predict -d '{"customer_age":50,"gender":"M","dependent_count":2,"education_level":3,"marital_status":"married","income_category":2,"card_category":"blue","months_on_book":4,"total_relationship_count":3,"credit_limit":4000,"total_revolving_bal":2511}'
+
+{"churn chance":0.5,"model_run_id":"70cc813fa2d64c598e3f5cd93ad674af"}
+```
+
+- run `make apply-prediction-reporting` to apply reporting script to the orchestrator. This will generate reports regularly.
+- open ` `, it will show `evidently_data_reporting` deployment. This runs every 3 hours. The system needs to collect 3+ hours of predictions data first before generating any report. Running the reporting manually at this time will not generate reports yet.
+- open `http://localhost:8888/` to see generated reports after 3+ hours.
+- open `http://localhost:8085/metrics` to see prometheus data. 
+- open `http://localhost:3000/dashboards` to see Grafana realtime monitoring dashboard of data drift
+
+
+Optionally:
+- publish to Kinesis. `data` is the request json payload base64 encoded
+``` sh
+aws kinesis put-record \
+    --stream-name predictions --endpoint-url=http://localhost:4566 \
+    --partition-key 1 \
+    --data "ewogICAgICAiY3VzdG9tZXJfYWdlIjogMTAwLAogICAgICAiZ2VuZGVyIjogIkYiLAogICAgICAiZGVwZW5kZW50X2NvdW50IjogMiwKICAgICAgImVkdWNhdGlvbl9sZXZlbCI6IDIsCiAgICAgICJtYXJpdGFsX3N0YXR1cyI6ICJtYXJyaWVkIiwKICAgICAgImluY29tZV9jYXRlZ29yeSI6IDIsCiAgICAgICJjYXJkX2NhdGVnb3J5IjogImJsdWUiLAogICAgICAibW9udGhzX29uX2Jvb2siOiA2LAogICAgICAidG90YWxfcmVsYXRpb25zaGlwX2NvdW50IjogMywKICAgICAgImNyZWRpdF9saW1pdCI6IDQwMDAsCiAgICAgICJ0b3RhbF9yZXZvbHZpbmdfYmFsIjogMjUwMAogICAgfQ=="
+``` 
+
+- consume from Kinesis
+``` sh
+aws kinesis get-shard-iterator  --shard-id shardId-000000000000 --endpoint-url=http://localhost:4566 --shard-iterator-type TRIM_HORIZON --stream-name results --query 'ShardIterator'
+# copy shard iterator without quotes
+
+aws kinesis get-records --endpoint-url=http://localhost:4566 --shard-iterator {SHARD_ITERATOR_HERE}
+# decode Data based64
+```
+
+- run `docker logs -t {container}` to see logs for now
+
 
 ### Other useful links:
 

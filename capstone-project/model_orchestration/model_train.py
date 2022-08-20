@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from ast import arg
-from ensurepip import version
 import os
 import argparse
 import pandas as pd
@@ -10,11 +8,10 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 import xgboost as xgb
 from sklearn.feature_extraction import DictVectorizer
-from sklearn.tree import DecisionTreeClassifier
 from sklearn import metrics
 import mlflow
 import pickle
-from hyperopt import hp, space_eval
+from hyperopt import hp
 from hyperopt.pyll import scope
 from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 from mlflow.tracking import MlflowClient

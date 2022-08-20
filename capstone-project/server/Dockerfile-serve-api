@@ -3,10 +3,10 @@ FROM python:3.8
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY server/predict.py .
-COPY server/model_service.py .
-COPY server/model_loader.py .
+COPY predict-api-server.py .
+COPY model_service.py .
+COPY model_loader.py .
 
 EXPOSE 9696
 
-CMD gunicorn --bind 0.0.0.0:9696 --workers 3 --log-level debug  predict:app
+CMD gunicorn --bind 0.0.0.0:9696 --workers 3 --log-level debug  predict-api-server:app

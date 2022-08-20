@@ -1,4 +1,3 @@
-from http import server
 import os
 import json
 import boto3

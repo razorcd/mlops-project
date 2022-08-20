@@ -85,7 +85,6 @@ services:
   serve-api:
     container_name: serve-api
     image: serve-api
-    build: .
     restart: always
     depends_on:
       - prefect_server
@@ -95,7 +94,7 @@ services:
       - evidently_service
       - mongo
     build:
-      context: .
+      context: ./server
       dockerfile: Dockerfile-serve-api
     ports:
       - "9696:9696"
@@ -117,7 +116,6 @@ services:
   serve-kinesis:
     container_name: serve-kinesis
     image: serve-kinesis
-    build: .
     restart: always
     depends_on:
       - prefect_server
@@ -127,7 +125,7 @@ services:
       - evidently_service
       - mongo
     build:
-      context: .
+      context: ./server
       dockerfile: Dockerfile-serve-kinesis
     env_file:
       - .env
@@ -147,12 +145,11 @@ services:
   send_data-api:
     container_name: send_data-api
     image: send_data-api
-    build: .
     restart: always
     depends_on:
       - serve-api
     build:
-      context: .
+      context: ./simulation_business
       dockerfile: Dockerfile-send-data-api
     image: "send_data-api"
     container_name: "send_data-api"
@@ -167,12 +164,11 @@ services:
   send_data-kinesis:
     container_name: send_data-kinesis
     image: send_data-kinesis
-    build: .
     restart: always
     depends_on:
       - serve-kinesis
     build:
-      context: .
+      context: ./simulation_business
       dockerfile: Dockerfile-send-data-kinesis
     image: "send_data-kinesis"
     container_name: "send_data-kinesis"

@@ -38,7 +38,7 @@ setup-model-registry:
 	mkdir -p /tmp/serve   
 	mkdir -p /tmp/mlreports
 	cp .env.$(env) .env
-	docker compose -f docker-compose-model-registry.yml up --build --force-recreate
+	docker compose -f docker-compose-model-registry.yml up --build --force-recreate -d
 	
 #run: make init_aws  to setup and initialize AWS services (uses localstack container)
 init_aws:
@@ -53,17 +53,16 @@ apply-model-train-flow:
 	docker cp ./model_orchestration/model_train_flow.py prefect_agent_1:model_train_flow.py
 	docker exec prefect_agent_1 prefect deployment create model_train_flow.py
 
-
 #run: make setup-model-serve env=local (or env=cloud)   to start the model serving containers
 setup-model-serve:
 	chmod 777 monitoring/
 	chmod 777 monitoring/**/*
 	cp .env.$(env) .env
-	docker compose -f docker-compose-serve.yml  up --build --force-recreate
+	docker compose -f docker-compose-serve.yml  up --build --force-recreate -d
 
 #run: make apply-prediction-reporting   to apply the automated prediction reporting DAG
 apply-prediction-reporting:
-	docker cp ./monitoring/create_report.py prefect_agent_1:create_report.py
+	docker cp ./reporting/create_report.py prefect_agent_1:create_report.py
 	docker exec prefect_agent_1 prefect deployment create create_report.py
 
 #run: make stop-serve   to stop the model servers (http api and Stream)

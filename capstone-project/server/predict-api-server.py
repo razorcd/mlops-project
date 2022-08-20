@@ -4,13 +4,10 @@
 import os
 
 from model_service import ModelService
-from ast import Mod
 from multiprocessing.pool import RUN
 import logging
-import pandas as pd
 from datetime import datetime
 
-from pandas import DataFrame
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
 import requests
