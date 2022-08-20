@@ -21,8 +21,7 @@ run_tests:
 
 #run: make reset_all   to delete all containers and cleanup volumes
 reset_all:
-	docker compose -f docker-compose-serve.yml down
-	docker compose -f docker-compose-model-registry.yml down
+	docker compose -f docker-compose-serve.yml -f docker-compose-model-registry.yml down 
 	rm -rf /tmp/mlopsdb
 	rm -rf /tmp/mlopsartifacts  
 	rm -rf /tmp/store   
