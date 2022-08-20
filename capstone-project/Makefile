@@ -68,8 +68,8 @@ apply-prediction-reporting:
 stop-serve:	
 	docker stop send_data-api
 	docker stop send_data-kinesis
-	docker stop serve
-	docker rm -f serve
+	docker stop send_data-api
+	docker rm -f send_data-kinesis
 
 #run: make start-serve env=local   to start the model servers (http api and Stream)
 start-serve:
