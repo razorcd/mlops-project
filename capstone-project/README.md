@@ -187,7 +187,8 @@ The pipeline will:
 - ssh in the cloud virtual machine
 - restart model-server-api and model-server-streams containers
 
-Github Actions runs: https://github.com/razorcd/mlops-training/actions
+- Github Actions runs: https://github.com/razorcd/mlops-training/actions
+- Github Actions configs: https://github.com/razorcd/mlops-training/blob/main/.github/workflows/github-actions-deployment.yml
 
 # Start infrastructure locally or cloud
 To deploy in the cloud, the steps are similar except: use you cloud VM domain instead of localhost to access the UIs and replace `env=local` with `env=cloud`
