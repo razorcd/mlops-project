@@ -1,6 +1,6 @@
 LOCAL_TAG:=$(shell date +"%Y-%m-%d-%H-%M")
 # Run:
-#  make help
+#  'make help' to see commands
 
 # Requires:
 #   make
@@ -19,7 +19,7 @@ help:
 run_tests:
 	pipenv run pytest server/tests	
 
-#run: make reset_all   to delete all countainers and cleanup volumes
+#run: make reset_all   to delete all containers and cleanup volumes
 reset_all:
 	docker compose -f docker-compose-serve.yml down
 	docker compose -f docker-compose-model-registry.yml down
@@ -73,7 +73,7 @@ stop-serve:
 	docker stop serve
 	docker rm -f serve
 
-# make start-serve env=local   to start the model servers (http api and Stream)
+#run: make start-serve env=local   to start the model servers (http api and Stream)
 start-serve:
 	cp .env.$(env) .env
 	docker compose -f docker-compose-serve.yml up -d

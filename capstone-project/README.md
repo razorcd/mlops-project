@@ -102,6 +102,28 @@ There are 2 Python scripts to simulate business requesting predictions from ML s
 - dockerized sending data to HTTP API: [Dockerfile-send-data-api](simulation_business/Dockerfile-send-data-api)
 - dockerized sending data to AWS Kinesis Streams: [Dockerfile-send-data-kinesis](simulation_business/Dockerfile-send-data-kinesis)
 
+### Monitoring
+
+There are 3 services for monitoring the model predictions is realtime:
+- [Evidently AI](monitoring/evidently_service/) for calculating data drift. Evidently UI: 
+- Prometheus for collecting monitoring data. Prometheus UI: 
+- Grafana for Dashboards UI. Grafana UI: [http://localhost:3000](http://localhost:3000/d/U54hsxv7k/evidently-data-drift-dashboard?orgId=1&refresh=10s)
+
+
+[Image]
+
+### Reporting
+
+There is a Prefect flow to generate reporting using Evidently: [create_report.py](reporting/create_report.py). This will generate reports every few hours save them in MongoDB and also generate static html pages with all data charts.
+
+Report file example: ...
+
+There is also an Nginx server to expose these html reports.
+
+- Nginx server: [nginx](reporting/nginx/)
+- Nginx address: `http://localhost:8888/`
+
+
 ### Deployment
 
 All containers are put together in docker compose files for easy deployment of the entire infrastructure. Docker-compose if perfect for this project, for a more advanced production environment where each service is deployed in different VM, I recommend using more advance tools.
@@ -112,10 +134,47 @@ All containers are put together in docker compose files for easy deployment of t
 All deployment commands are grouped using the Makefile for simplicity of use.
 - [Makefile](Makefile)
 
-The environment variables are in [.env.local](.env.local) or [.env.cloud](.env.cloud)
+The environment variables should be in `.env` file. The Makefile will use one of these: [.env.local](.env.local) or [.env.cloud](.env.cloud).
+
+``` sh
+$> make help
+
+Commands:
+
+run: make run_tests   to run tests locally
+run: make reset_all   to delete all containers and cleanup volumes
+run: make setup-model-registry env=local (or env=cloud)   to start model registry and training containers
+run: make init_aws  to setup and initialize AWS services (uses localstack container)
+run: make apply-model-train-flow   to apply the automated model training DAG 
+run: make setup-model-serve env=local (or env=cloud)   to start the model serving containers
+run: make apply-prediction-reporting   to apply the automated prediction reporting DAG
+run: make stop-serve   to stop the model servers (http api and Stream)
+run: make start-serve env=local   to start the model servers (http api and Stream)
+```
+
+### CI/CD in Cloud
+
+The continuos deployment is done using Github actions. Once a change is made to the repo, the deployment pipeline is triggered. This will restart the model servers to load a new model from the MLFlow model registry. The deployed model is always specified in `.env.cloud` file under `RUN_ID` environment variable.
+
+The pipeline will:
+- run tests 
+- ssh in the cloud virtual machine
+- restart model-server-api and model-server-streams containers
+
+### Deploying to cloud
+
+Cloud deployment requirements:
+-
+
+Cloud deployment steps:
+-
+
+The entire infrastructure was deployed in the cloud using virtual machine provided by [Digital Ocean](https://www.digitalocean.com/).
+
+[Image ssh & docker ps]
 
 
-## Other:
+### Other useful links:
 
 - Github Acction: add ssh keys from server: https://zellwk.com/blog/github-actions-deploy/
 
