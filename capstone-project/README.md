@@ -4,7 +4,7 @@ The challenge requested to build an fully automated end-to-end Machine Learning 
 
 Note: this is a personal project to demonstrate an automated ML infrastructure. Security was not in the scope of this project. For deploying this infrastructure in a production environment please ensure proper credentials are set for each service and the infrastructure is not exposing unwanted endpoints to the public internet.
 
-# Project content
+# Project progress
 
 ### Input data
 
@@ -16,7 +16,7 @@ Description: A business manager of a consumer credit card bank is facing the pro
 Source: https://www.kaggle.com/datasets/anwarsan/credit-card-bank-churn
 
 
-### Implementation steps:
+### Implementation plan:
 
 - [x] cleanup data
 - [x] exploratory data analysis
@@ -32,7 +32,7 @@ Source: https://www.kaggle.com/datasets/anwarsan/credit-card-bank-churn
 - [x] logging and monitoring
 - [x] batch reporting
 - [x] docker and docker-compose everything
-- [x] server to download reporting
+- [x] reporting server
 
 
 To do reminders:
@@ -44,7 +44,7 @@ To do reminders:
 
 - Categories that can be ordered hiarachically are converted into ints, like "income" or "education level".
 
-[prepareData.ipynb](prepareData.ipynb)
+[prepareData.ipynb](model_preparation_analysis/prepareData.ipynb)
 
 ### Exploratory data analysis
 
@@ -52,7 +52,8 @@ To do reminders:
 
 - Checks count on categorical columns.
 
-[exploratory_data_analysis.ipynb](exploratory_data_analysis.ipynb)
+- [exploratory_data_analysis.ipynb](exploratory_data_analysis/exploratory_data_analysis.ipynb)
+- [model_preparation_analysis](model_preparation_analysis)
 
 ### Train Model
 
@@ -64,18 +65,58 @@ To do reminders:
 
 - Measures % of deviated predictions based on month threshold.
 
-[model_train.ipynb](model_train.ipynb)
+- [model_train.ipynb](model_preparation_analysis/model_train.ipynb)
 
+### Model Registry with MLFlow
 
-### Automated hyperoptimization tuning and model registry
+- dockerized MLFlow: [Dockerfile-mlflow](mlflow/Dockerfile-mlflow)
+- MLFlow UI: `http://localhost:5051`
 
-System is using Prefect to orchestrate DAGs. Every few hours, Prefect Agent will start and read the training data from S3, it will build models using XGBoost by running hyperparameterization on the configurations, generating 50 models and calulating accuracy (rmse) for each of them. All 50 models are registered in the MLFlow model registry experiments. At the end of each run, the best model will be registered in MLFlow as ready for deployment.
+### Automated hyperoptimization tuning
 
-Prefect UI: http://localhost:4200
-MLFlow UI: http://localhost:5051
+System is using Prefect to orchestrate DAGs. Every few hours, Prefect Agent will start and read the training data from S3, it will build models using XGBoost by running hyperparameterization on the configurations, generating 50 models and calculating accuracy (rmse) for each of them. All 50 models are registered in the MLFlow model registry experiments. At the end of each run, the best model will be registered in MLFlow as ready for deployment.
 
+- model training Prefect flow: [model_train_flow.py](model_orchestration/model_train_flow.py)
+- dockerized Prefect Server: [Dockerfile-prefect](model_orchestration/Dockerfile-prefect)
+- dockerized Prefect Agent: [Dockerfile-prefect-agent](model_orchestration/Dockerfile-prefect-agent)
+
+- Prefect UI: `http://localhost:4200`
+
+### Model serving HTTP API and Stream
+
+There are 2 ML service servers. One serving predictions using HTTP API build in Python with Flask. Second serving predictions using AWS Kinesis streams, both consuming and publishing results back.
+
+- model serving using Python Flask HTTP API: [predict-api-server.py](server/predict-api-server.py)
+- model serving using Python and AWS Kinesis Streams: [serve_kinesis.py](server/serve_kinesis.py)
+
+- dockerized Flask API server: [Dockerfile-serve-api](server/Dockerfile-serve-api)
+- dockerized AWS Kinesis server: [Dockerfile-serve-kinesis](server/Dockerfile-serve-kinesis)
+
+### Simulation_business: sending data for realtime prediction
+
+There are 2 Python scripts to simulate business requesting predictions from ML servers. One request data from HTTP API server and another one sending events to `predictions` Kinesis stream and receiving results to `results` Kinesis stream.
+
+- sending data for prediction using HTTP API: [send_data-api.py](simulation_business/send_data-api.py)
+- sending data for prediction using AWS Kinesis Streams: [serve_kinesis.py](simulation_business/serve_kinesis.py)
+
+- dockerized sending data to HTTP API: [Dockerfile-send-data-api](simulation_business/Dockerfile-send-data-api)
+- dockerized sending data to AWS Kinesis Streams: [Dockerfile-send-data-kinesis](simulation_business/Dockerfile-send-data-kinesis)
+
+### Deployment
+
+All containers are put together in docker compose files for easy deployment of the entire infrastructure. Docker-compose if perfect for this project, for a more advanced production environment where each service is deployed in different VM, I recommend using more advance tools.
+
+- Deployment: model training: [docker-compose-model-registry.yml](docker-compose-model-registry.yml)
+- Deployment: model serving: [docker-compose-serve.yml](docker-compose-serve.yml)
+
+All deployment commands are grouped using the Makefile for simplicity of use.
+- [Makefile](Makefile)
+
+The environment variables are in [.env.local](.env.local) or [.env.cloud](.env.cloud)
 
 
 ## Other:
 
 - Github Acction: add ssh keys from server: https://zellwk.com/blog/github-actions-deploy/
+
+
