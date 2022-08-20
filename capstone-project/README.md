@@ -4,6 +4,26 @@ The challenge requested to build an fully automated end-to-end Machine Learning 
 
 Note: this is a personal project to demonstrate an automated ML infrastructure. Security was not in the scope of this project. For deploying this infrastructure in a production environment please ensure proper credentials are set for each service and the infrastructure is not exposing unwanted endpoints to the public internet.
 
+# Final architecture:
+
+<img width="1337" alt="image" src="https://user-images.githubusercontent.com/3721810/185756770-73bfea67-8455-4e51-9cbf-14e0ceba5909.png">
+
+There is a Prefect orchestrator to run 2 flows on a scheduler basis. The `Hyperoptimization deployment flow` is executed by a `Prefect Agent` by pulling training data from the `AWS S3 feature store`, runs hyperoptimization ML model builds and it saved each model (around 50 models per run) in the MLFlow model registry. On each run it finds the most efficient model and it registeres it in MlFlow to be ready for deployment. 
+
+An engineer must decide when and which models should be deployed. First copy the `RUN_ID` of the selected model for deployment and update `.env.local` (or `.env.cloud` for cloud) with the new `RUN_ID` field. 
+
+Once the `RUN_ID` is updated, Github Actions triggers a new pipeline-run which will run tests and restart the 2 servers (http-api and kinesis-streams servers).
+
+The `Business Simulation using AWS Kinesis Streams` simulates business regularly (every 60sec) sending events to Kinesis stream for prediction. `ML Model Serving Kinesis Stream service` is a ML serving server using Kinessis stream as input and output for running predictions is realtime.
+
+The `Business Simulation using HTTP API` simulates business regularly (every 60sec) sending http requests. `ML Model Serving Flask HTTP API service` is a ML serving server using http APIs for running predictions in realtime. On each prediction request, input and prediction is saved in MongoDB for later processing and to `Evidently` for monitoring.
+
+`Evidently` is calculating data drift to understand if the running predictions are degreding after a while.
+`Prometheus` is storing monitoring data and `Grafana` is providing a Dashboard UI to monitor the prediction data drift in realtime.
+
+The `Batch reporting flow` is running regularly (every 3 hours) on the MongoDB data to execute data drift reports. These reports are saved as `html` and the `File server - Nginx` gives access to the report files.
+
+
 # Project progress
 
 ### Input data
