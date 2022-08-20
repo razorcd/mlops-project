@@ -133,7 +133,7 @@ There are 2 Python scripts to simulate business requesting predictions from ML s
 There are 3 services for monitoring the model predictions is realtime:
 - [Evidently AI](monitoring/evidently_service/) for calculating data drift. Evidently UI: 
 - Prometheus for collecting monitoring data. Prometheus UI: 
-- Grafana for Dashboards UI. Grafana UI: [http://localhost:3000](http://localhost:3000/d/U54hsxv7k/evidently-data-drift-dashboard?orgId=1&refresh=10s)
+- Grafana for Dashboards UI. Grafana UI: [http://localhost:3000](http://localhost:3000/d/U54hsxv7k/evidently-data-drift-dashboard?orgId=1&refresh=10s) (default user/pass: admin, admin)
 
 <img width="1784" alt="image" src="https://user-images.githubusercontent.com/3721810/185757624-2cc5c23a-40a7-4d4f-8ad3-3c9cefe08cbb.png">
 
@@ -187,6 +187,8 @@ The pipeline will:
 - ssh in the cloud virtual machine
 - restart model-server-api and model-server-streams containers
 
+Github Actions runs: https://github.com/razorcd/mlops-training/actions
+
 # Start infrastructure locally or cloud
 To deploy in the cloud, the steps are similar except: use you cloud VM domain instead of localhost to access the UIs and replace `env=local` with `env=cloud`
 
@@ -213,7 +215,7 @@ $> curl -X POST -H 'Content-Type: application/json' http://127.0.0.1:9696/predic
 - open ` `, it will show `evidently_data_reporting` deployment. This runs every 3 hours. The system needs to collect 3+ hours of predictions data first before generating any report. Running the reporting manually at this time will not generate reports yet.
 - open `http://localhost:8888/` to see generated reports after 3+ hours.
 - open `http://localhost:8085/metrics` to see prometheus data. 
-- open `http://localhost:3000/dashboards` to see Grafana realtime monitoring dashboard of data drift
+- open `http://localhost:3000/dashboards` to see Grafana realtime monitoring dashboard of data drift. (default user/pass: admin, admin)
 
 
 Optionally:
@@ -243,8 +245,33 @@ All running containers:
 
 The entire infrastructure was deployed in the cloud using virtual machine provided by [Digital Ocean](https://www.digitalocean.com/).
 
-TODO: Add Image ssh & docker ps
-TODO: Add links to cloud to check
+Links:
+- ML Flow model registry: http://188.166.115.79:5051/
+- Prefect orchestrator: http://188.166.115.79:4200/
+- predict using API:
+``` sh
+curl -X POST -H 'Content-Type: application/json' http://188.166.115.79:9696/predict -d '{"customer_age":50,"gender":"M","dependent_count":2,"education_level":3,"marital_status":"married","income_category":2,"card_category":"blue","months_on_book":4,"total_relationship_count":3,"credit_limit":4000,"total_revolving_bal":2511}' 
+{"churn chance":0.5,"model_run_id":"8a19dc8026dc4e4cb972ad84194940fd"}
+```
+- publish to Kinesis. `data` is the request json payload base64 encoded
+``` sh
+aws kinesis put-record \
+    --stream-name predictions --endpoint-url=http://188.166.115.79:4566 \
+    --partition-key 1 \
+    --data "ewogICAgICAiY3VzdG9tZXJfYWdlIjogMTAwLAogICAgICAiZ2VuZGVyIjogIkYiLAogICAgICAiZGVwZW5kZW50X2NvdW50IjogMiwKICAgICAgImVkdWNhdGlvbl9sZXZlbCI6IDIsCiAgICAgICJtYXJpdGFsX3N0YXR1cyI6ICJtYXJyaWVkIiwKICAgICAgImluY29tZV9jYXRlZ29yeSI6IDIsCiAgICAgICJjYXJkX2NhdGVnb3J5IjogImJsdWUiLAogICAgICAibW9udGhzX29uX2Jvb2siOiA2LAogICAgICAidG90YWxfcmVsYXRpb25zaGlwX2NvdW50IjogMywKICAgICAgImNyZWRpdF9saW1pdCI6IDQwMDAsCiAgICAgICJ0b3RhbF9yZXZvbHZpbmdfYmFsIjogMjUwMAogICAgfQ=="
+``` 
+- consume from Kinesis
+``` sh
+aws kinesis get-shard-iterator  --shard-id shardId-000000000000 --endpoint-url=http://188.166.115.79:4566 --shard-iterator-type TRIM_HORIZON --stream-name results --query 'ShardIterator'
+# copy shard iterator without quotes
+
+aws kinesis get-records --endpoint-url=http://188.166.115.79:4566 --shard-iterator {SHARD_ITERATOR_HERE}
+# decode Data based64
+```
+- Prometheus UI: http://188.166.115.79:8085/metrics
+- Grafana Dashboard UI: http://188.166.115.79:3000/dashboards   (user/pass: admin, admin)
+- Reports folder: http://188.166.115.79:8888/   (only after first 3 hours after deployment)
+- Github Actions pipeline: https://github.com/razorcd/mlops-training/actions
 
 ### Other useful links:
 
