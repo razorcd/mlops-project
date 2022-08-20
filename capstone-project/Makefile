@@ -15,9 +15,14 @@ help:
 # @make -qpRr | egrep -e '^[a-z].*:' | sed -e 's~:~~g' | sort
 	@echo ""
 
+#run: make setup_tests   to install tests dependencies locally
+setup_tests:
+	pip install pytest
+	pip install -r server/requirements.txt
+
 #run: make run_tests   to run tests locally
 run_tests:
-	pipenv run pytest server/tests	
+	pytest server/tests	
 
 #run: make reset_all   to delete all containers and cleanup volumes
 reset_all:
