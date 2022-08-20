@@ -195,7 +195,7 @@ To deploy in the cloud, the steps are similar except: use you cloud VM domain in
 
 - run `make setup-model-registry env=local`  to start model training infrastructure
 - open `http://localhost:5051` to see MLFlow UI.
-- run `make init_aws  to setup and initialize` to setup training data and streams in AWS
+- run `make init_aws` to setup training data and streams in AWS
 - run `make apply-model-train-flow` to apply model training script to the orchestrator. This will run trainings regularly.
 - open `http://localhost:4200/#deployments`, it will show the `model_tuning_and_uploading` deployment scheduled. Start a `Quick Run` to not wait for the scheduler. This will run the model training pipeline and upload a bunch of models to MLFlow server and register the best model.
 
