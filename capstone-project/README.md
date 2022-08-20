@@ -93,6 +93,9 @@ To do reminders:
 - dockerized MLFlow: [Dockerfile-mlflow](mlflow/Dockerfile-mlflow)
 - MLFlow UI: `http://localhost:5051`
 
+<img width="1766" alt="image" src="https://user-images.githubusercontent.com/3721810/185757901-98bab827-cee0-4d8e-ae20-c7ff306db777.png">
+<img width="1760" alt="image" src="https://user-images.githubusercontent.com/3721810/185757723-8de0637a-7a08-4397-b9e1-b0dee629ee04.png">
+
 ### Automated hyperoptimization tuning
 
 System is using Prefect to orchestrate DAGs. Every few hours, Prefect Agent will start and read the training data from S3, it will build models using XGBoost by running hyperparameterization on the configurations, generating 50 models and calculating accuracy (rmse) for each of them. All 50 models are registered in the MLFlow model registry experiments. At the end of each run, the best model will be registered in MLFlow as ready for deployment.
@@ -102,6 +105,8 @@ System is using Prefect to orchestrate DAGs. Every few hours, Prefect Agent will
 - dockerized Prefect Agent: [Dockerfile-prefect-agent](model_orchestration/Dockerfile-prefect-agent)
 
 - Prefect UI: `http://localhost:4200`
+
+<img width="1446" alt="image" src="https://user-images.githubusercontent.com/3721810/185757784-7a9e8adc-87e5-470b-9c59-89969085dbd1.png">
 
 ### Model serving HTTP API and Stream
 
