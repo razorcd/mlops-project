@@ -130,8 +130,8 @@ There are 3 services for monitoring the model predictions is realtime:
 - Prometheus for collecting monitoring data. Prometheus UI: 
 - Grafana for Dashboards UI. Grafana UI: [http://localhost:3000](http://localhost:3000/d/U54hsxv7k/evidently-data-drift-dashboard?orgId=1&refresh=10s)
 
+<img width="1784" alt="image" src="https://user-images.githubusercontent.com/3721810/185757624-2cc5c23a-40a7-4d4f-8ad3-3c9cefe08cbb.png">
 
-[Image]
 
 ### Reporting
 
