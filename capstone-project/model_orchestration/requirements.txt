@@ -1,0 +1,11 @@
+boto3==1.21.21
+hyperopt==0.2.7
+matplotlib==3.5.3
+mlflow==1.28.0
+numpy==1.23.1
+pandas==1.4.3
+pickleshare==0.7.5
+pyarrow==9.0.0
+s3fs==2022.7.1
+scikit-learn==1.1.2
+xgboost==1.6.1

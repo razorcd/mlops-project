@@ -13,6 +13,6 @@ RUN prefect config set PREFECT_API_URL="http://prefect_server:4200/api"
 
 RUN prefect config view
 
-COPY orchestration/setup_prefect.sh .
+COPY setup_prefect.sh .
 
 ENTRYPOINT  sleep 15 && sh setup_prefect.sh && prefect agent start work_queue_3

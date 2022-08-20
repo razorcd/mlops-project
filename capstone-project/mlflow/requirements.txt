@@ -1,0 +1,3 @@
+mlflow==1.28.0
+boto3==1.21.21
+pymysql

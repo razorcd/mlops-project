@@ -50,7 +50,7 @@ init_aws:
 
 #run: make apply-model-train-flow   to apply the automated model training DAG 
 apply-model-train-flow:
-	docker cp ./orchestration/model_train_flow.py prefect_agent_1:model_train_flow.py
+	docker cp ./model_orchestration/model_train_flow.py prefect_agent_1:model_train_flow.py
 	docker exec prefect_agent_1 prefect deployment create model_train_flow.py
 
 

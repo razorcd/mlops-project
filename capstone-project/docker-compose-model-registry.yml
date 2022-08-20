@@ -3,7 +3,7 @@ services:
     mlflow_server:
       restart: always
       build:
-        context: .
+        context: ./mlflow
         dockerfile: Dockerfile-mlflow
       image: mlflow_server
       container_name: mlflow_server
@@ -19,7 +19,7 @@ services:
     prefect_server:
       restart: always
       build:
-        context: .
+        context: ./model_orchestration
         dockerfile: Dockerfile-prefect
       logging:
         driver: none
@@ -38,14 +38,13 @@ services:
         - /tmp/store:/tmp/store      
 
     agent:
-      build: .
       restart: always
       depends_on:
         - prefect_server
         - localstack
         - mlflow_server
       build:
-        context: .
+        context: ./model_orchestration
         dockerfile: Dockerfile-prefect-agent
       image: "prefect_agent_1"
       container_name: "prefect_agent_1"
@@ -65,7 +64,7 @@ services:
       container_name: "reports_nginx_server"
       image: "reports_nginx_server"
       build:
-        context: monitoring/nginx
+        context: reporting/nginx
         dockerfile: Dockerfile  
       depends_on:
         - prefect_server
