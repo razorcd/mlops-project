@@ -1,10 +1,12 @@
-# MLOPS training based on MLOPS Zoomcamp course offered by DataTalks.Club
-https://github.com/DataTalksClub/mlops-zoomcamp
-
-## Final capstone project:
-Build an end-to-end machine learning pipeline project
+# Final capstone project:
+Full end-to-end Machine Learning pipeline project
 
 https://github.com/razorcd/mlops-training/tree/main/capstone-project
+
+
+
+# MLOPS training based on MLOPS Zoomcamp course offered by DataTalks.Club
+https://github.com/DataTalksClub/mlops-zoomcamp
 
 ## Notes:
 - MLOPS maturity model: https://docs.microsoft.com/en-us/azure/architecture/example-scenario/mlops/mlops-maturity-model
