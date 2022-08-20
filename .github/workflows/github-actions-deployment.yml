@@ -1,10 +1,24 @@
 name: GitHub Actions Cloud Deployment
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   Deploy-New-ML-Model:
     runs-on: ubuntu-latest
     steps:
+      - name: run tests
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.8' 
+      - run: |
+          cd capstone-project
+          pip install pytest
+          pip install -r server/requirements.txt
+          pytest server/tests
+
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2
         with:
