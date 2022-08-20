@@ -27,7 +27,7 @@ jobs:
 
       - run: ssh root@${{ secrets.SSH_HOST }} "cd mlops-training/capstone-project; git pull origin main"
       - run: ssh root@${{ secrets.SSH_HOST }} "cd mlops-training/capstone-project; make stop-serve"
-      - run: ssh root@${{ secrets.SSH_HOST }} "cd mlops-training/capstone-project; make start-serve"
+      - run: ssh root@${{ secrets.SSH_HOST }} "cd mlops-training/capstone-project; make start-serve env=cloud"
 
       - run: echo "🍏 This job's status is ${{ job.status }}."
 
