@@ -224,6 +224,9 @@ aws kinesis get-records --endpoint-url=http://localhost:4566 --shard-iterator {S
 
 - run `docker logs -t {container}` to see logs for now
 
+All running containers:
+<img width="1571" alt="image" src="https://user-images.githubusercontent.com/3721810/185755712-4591f7ba-a98e-4f7b-a8a1-231d33e8beea.png">
+
 
 ### Other useful links:
 
