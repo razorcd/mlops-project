@@ -23,7 +23,7 @@ jobs:
       
       - name: Deploying with configurations
         run: |
-          cat ${{ github.workspace }}/capstone-project/.env
+          cat ${{ github.workspace }}/capstone-project/.env.cloud
 
       - run: ssh root@${{ secrets.SSH_HOST }} "cd mlops-training/capstone-project; git pull origin main"
       - run: ssh root@${{ secrets.SSH_HOST }} "cd mlops-training/capstone-project; make stop-serve"
