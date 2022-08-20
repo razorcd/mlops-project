@@ -8,17 +8,6 @@ jobs:
   Deploy-New-ML-Model:
     runs-on: ubuntu-latest
     steps:
-#       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.8' 
-      - name: run tests
-        run: |
-          cd capstone-project
-          pip install pytest
-          pip install -r server/requirements.txt
-          pytest server/tests
-
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2
         with:
@@ -34,6 +23,16 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.8' 
+      - name: run tests
+        run: |
+          cd capstone-project
+          pip install pytest
+          pip install -r server/requirements.txt
+          pytest server/tests
       
       - name: Deploying with configurations
         run: |
