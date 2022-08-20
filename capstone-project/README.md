@@ -187,20 +187,6 @@ The pipeline will:
 - ssh in the cloud virtual machine
 - restart model-server-api and model-server-streams containers
 
-### Deploying to cloud
-
-Cloud deployment requirements:
--
-
-Cloud deployment steps:
--
-
-The entire infrastructure was deployed in the cloud using virtual machine provided by [Digital Ocean](https://www.digitalocean.com/).
-
-[Image ssh & docker ps]
-
-
-
 # Start infrastructure locally or cloud
 To deploy in the cloud, the steps are similar except: use you cloud VM domain instead of localhost to access the UIs and replace `env=local` with `env=cloud`
 
@@ -253,9 +239,15 @@ aws kinesis get-records --endpoint-url=http://localhost:4566 --shard-iterator {S
 All running containers:
 <img width="1571" alt="image" src="https://user-images.githubusercontent.com/3721810/185755712-4591f7ba-a98e-4f7b-a8a1-231d33e8beea.png">
 
+### Cloud Deployment
+
+The entire infrastructure was deployed in the cloud using virtual machine provided by [Digital Ocean](https://www.digitalocean.com/).
+
+TODO: Add Image ssh & docker ps
+TODO: Add links to cloud to check
 
 ### Other useful links:
 
-- Github Acction: add ssh keys from server: https://zellwk.com/blog/github-actions-deploy/
+- Github Actions: add ssh keys from server: https://zellwk.com/blog/github-actions-deploy/
 
 
