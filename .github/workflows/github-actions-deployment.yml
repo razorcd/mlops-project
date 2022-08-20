@@ -8,12 +8,12 @@ jobs:
   Deploy-New-ML-Model:
     runs-on: ubuntu-latest
     steps:
-      - name: run tests
 #       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: '3.8' 
-      - run: |
+      - name: run tests
+        run: |
           cd capstone-project
           pip install pytest
           pip install -r server/requirements.txt
