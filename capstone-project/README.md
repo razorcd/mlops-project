@@ -150,6 +150,9 @@ There is also an Nginx server to expose these html reports.
 - Nginx server: [nginx](reporting/nginx/)
 - Nginx address: `http://localhost:8888/`
 
+Report example:
+<img width="1778" alt="image" src="https://user-images.githubusercontent.com/3721810/185809783-4d0e21f6-e1e2-41b0-8918-c03399a2bc1d.png">
+
 
 ### Deployment
 
