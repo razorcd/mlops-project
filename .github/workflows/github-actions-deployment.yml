@@ -1,0 +1,49 @@
+name: GitHub Actions Cloud Deployment
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Deploy-New-ML-Model:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: unnecessary
+
+      - name: Adding Known Hosts
+        run: ssh-keyscan -p 22 -H ${{ secrets.SSH_HOST }}  >> ~/.ssh/known_hosts
+
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.8' 
+      - name: setup tests dependencies
+        run: |
+          cd capstone-project
+          pip install pytest
+          pip install -r server/requirements.txt
+      - name: run tests
+        run: |
+          cd capstone-project
+          pytest server/tests
+      
+      - name: Deploying with configurations
+        run: |
+          cat ${{ github.workspace }}/capstone-project/.env.cloud
+
+      - run: ssh root@${{ secrets.SSH_HOST }} "cd mlops-training/capstone-project; git pull origin main"
+      - run: ssh root@${{ secrets.SSH_HOST }} "cd mlops-training/capstone-project; make stop-serve"
+      - run: ssh root@${{ secrets.SSH_HOST }} "cd mlops-training/capstone-project; make start-serve env=cloud"
+
+      - run: echo "🍏 This job's status is ${{ job.status }}."
+
