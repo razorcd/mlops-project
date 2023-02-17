@@ -1,5 +1,5 @@
 # Project for Machine Learning Operations (MLOps)
-[![GitHub Actions Cloud Deployment](https://github.com/razorcd/mlops-training/actions/workflows/github-actions-deployment.yml/badge.svg)](https://github.com/razorcd/mlops-training/actions/workflows/github-actions-deployment.yml)
+[![GitHub Actions Cloud Deployment](https://github.com/razorcd/mlops-project/actions/workflows/github-actions-deployment.yml/badge.svg)](https://github.com/razorcd/mlops-project/actions/workflows/github-actions-deployment.yml)
 
 The challenge requested to build an fully automated end-to-end Machine Learning infrastructure, including reading data from a feature store, automated model creation with hyperoptimization tuning and automatically finding the most efficient model, storing models in a model registry, building a CI/CD pipeline for deploying the registered model into a production environment, serving the model using HTTP API or Streaming interfaces, implementing monitoring, writing tests and linters, creating regular automated reporting.
 
@@ -190,8 +190,8 @@ The pipeline will:
 - ssh in the cloud virtual machine
 - restart model-server-api and model-server-streams containers
 
-- Github Actions runs: https://github.com/razorcd/mlops-training/actions
-- Github Actions configs: https://github.com/razorcd/mlops-training/blob/main/.github/workflows/github-actions-deployment.yml
+- Github Actions runs: https://github.com/razorcd/mlops-project/actions
+- Github Actions configs: https://github.com/razorcd/mlops-project/blob/main/.github/workflows/github-actions-deployment.yml
 
 # Start infrastructure locally or cloud
 To deploy in the cloud, the steps are similar except: use you cloud VM domain instead of localhost to access the UIs and replace `env=local` with `env=cloud`
@@ -275,7 +275,7 @@ aws kinesis get-records --endpoint-url=http://188.166.115.79:4566 --shard-iterat
 - Prometheus UI: http://188.166.115.79:8085/metrics
 - Grafana Dashboard UI: http://188.166.115.79:3000/dashboards   (user/pass: admin, admin)
 - Reports folder: http://188.166.115.79:8888/   (only after first 3 hours after deployment)
-- Github Actions pipeline: https://github.com/razorcd/mlops-training/actions
+- Github Actions pipeline: https://github.com/razorcd/mlops-project/actions
 
 ### Other useful links:
 
